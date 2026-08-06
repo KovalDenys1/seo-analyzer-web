@@ -68,7 +68,7 @@ export async function GET(req: Request) {
     key_id: keyRow.id,
     endpoint: apiPath,
     url,
-    score: result?.score ?? null,
+    score: result?.seo_score ?? null,
     status: upstream.status,
     duration_ms: duration,
   });
