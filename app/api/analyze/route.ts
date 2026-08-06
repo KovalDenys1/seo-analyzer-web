@@ -58,7 +58,9 @@ export async function GET(req: Request) {
   const apiPath = endpoint === "quick-score" ? "/quick-score" : endpoint === "metadata" ? "/metadata" : "/analyze";
   const start = Date.now();
 
-  const upstream = await fetch(`${apiBase}${apiPath}?url=${encodeURIComponent(url)}`);
+  const upstream = await fetch(`${apiBase}${apiPath}?url=${encodeURIComponent(url)}`, {
+    headers: process.env.SEO_API_KEY ? { "X-API-Key": process.env.SEO_API_KEY } : {},
+  });
   const duration = Date.now() - start;
   const result = await upstream.json();
 
