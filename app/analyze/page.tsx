@@ -114,12 +114,12 @@ export default function AnalyzePage() {
     <div style={{ background: "var(--ink-50)", minHeight: "100vh" }}>
       {/* top bar */}
       <header
+        className="glass"
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           padding: "14px 36px",
-          background: "#fff",
           borderBottom: "1px solid var(--ink-100)",
           position: "sticky",
           top: 0,

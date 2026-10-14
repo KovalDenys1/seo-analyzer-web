@@ -80,7 +80,6 @@ export default function DashShell({ children }: { children: React.ReactNode }) {
                   background: isActive ? "rgba(94,234,212,.08)" : "transparent",
                   boxShadow: isActive ? "inset 0 0 0 1px rgba(94,234,212,.18)" : "none",
                   textDecoration: "none",
-                  transition: "color .1s, background .1s",
                 }}
               >
                 <item.icon size={16} color={isActive ? "#5eead4" : "#9ca3af"} />

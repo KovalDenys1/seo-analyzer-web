@@ -4,6 +4,7 @@ import Link from "next/link";
 export default function Navbar() {
   return (
     <header
+      className="glass"
       style={{
         position: "sticky",
         top: 0,
@@ -12,8 +13,6 @@ export default function Navbar() {
         alignItems: "center",
         justifyContent: "space-between",
         padding: "18px 56px",
-        background: "rgba(255,255,255,.85)",
-        backdropFilter: "saturate(140%) blur(12px)",
         borderBottom: "1px solid var(--ink-100)",
       }}
     >

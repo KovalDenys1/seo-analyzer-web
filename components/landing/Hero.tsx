@@ -190,7 +190,6 @@ export default function Hero() {
                 fontSize: 14,
                 fontWeight: 600,
                 cursor: analyzing ? "not-allowed" : "pointer",
-                transition: "background .15s",
               }}
             >
               {analyzing ? "Analyzing…" : "Analyze"}
