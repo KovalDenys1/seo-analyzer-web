@@ -26,7 +26,7 @@ const tiers: Tier[] = [
       "Every issue found on the page",
       "The top fixes, ranked by impact",
     ],
-    cta: "Audit a page",
+    cta: "Try it free",
     href: "#try",
     external: false,
     accent: false,

@@ -18,7 +18,7 @@ export default function CTABanner() {
               Run a site audit on Apify <ArrowR size={14} />
             </a>
             <a href="#try" className="btn-ghost-dark btn-lg">
-              Try one page free
+              Try it free
             </a>
           </div>
         </div>
