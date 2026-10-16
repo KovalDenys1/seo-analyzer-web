@@ -27,7 +27,8 @@ The only working payment path is the Apify actor ([seo-audit-lab/saas-seo-analyz
 | 10 | Billing page showed fake invoices and a fake card | Misleading to a signed-in user | **Fixed** `7ccada9` |
 | 11 | No sending address or domain under the brand. The outreach Gmail carries a personal name, and the site lives on `*.vercel.app` | Cold email from a personal address, linking to a vercel.app site, reads as a side project | **Open.** A brand mailbox needs a sign-up and a domain costs about $10 a year, so both are his step |
 | 12 | Site not in Google Search Console, and the sitemap is not submitted | Indexing waits on discovery | **Open.** Needs his Google sign-in. The sitemap is at `/sitemap.xml` |
-| 13 | Apify Store listing has 0 reviews, and its README does not link to the free audit | Store ranking leans on users and reviews | **Open.** Add the site link and a short "try one page free" line on the next actor push. Ask the first real users for a review |
+| 13 | Apify Store listing has 0 reviews, and its README does not link to the free audit | Store ranking leans on users and reviews | **Partly fixed.** The README link is in `967f60a`, but it reaches the Store only with an `apify push` from `apify-actor/` (see 13a). Ask the first real users for a review |
+| 13a | The analyzer missed small client-rendered shells. A Vite or CRA homepage of about 1.5 KB was reported as thin content with no H1 instead of as a JavaScript shell, because the check needed more than 10 KB of HTML | Wrong diagnosis on exactly the SaaS sites we pitch | **Fixed** `4240cce`, live on Render. The actor is pinned to it in `967f60a`, and pinned tests pass, but the Store build changes only after `apify push` from `apify-actor/` |
 | 14 | Supabase `saas-db` is paused, and restoring it is refused by the 2-free-project limit (`boardly-db` and `boardly-dev` hold both slots) | The API-key path is down | **Open, decided.** It stays dormant, and the landing page no longer links sign-up. Apify covers keys and billing for v1. Revisit only with Stripe (gap 16) |
 | 15 | No usage signal on the site beyond Vercel function logs | Cannot tell whether strangers try it | **Partly fixed.** Each free audit logs `try-audit host=… score=…`. Vercel Web Analytics (free on Hobby) is still open |
 | 16 | Stripe billing on the site | Only matters if buyers want a monthly API plan rather than pay per page | **Deferred.** Only if the actor shows demand (see the Reference note's build plan) |
@@ -37,5 +38,5 @@ The only working payment path is the Apify actor ([seo-audit-lab/saas-seo-analyz
 
 ## Not gaps
 
-- Backend API. 94 tests and the 14 actor tests pass. Live `/v1/analyze` handles bad URLs, private addresses and DNS failures with clean errors. Render keep-warm from the Pi works (`/healthz` 200 in 0.3 s).
+- Backend API. 96 tests and the 14 actor tests pass. Live `/v1/analyze` handles bad URLs, private addresses and DNS failures with clean errors. Render keep-warm from the Pi works (`/healthz` 200 in 0.3 s).
 - Apify payment. Pay-per-event pricing is live, failed pages are not charged, and Apify's free plan gives a stranger $5 a month with no card.
