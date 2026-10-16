@@ -7,6 +7,8 @@ const DAILY_LIMITS: Record<string, number> = {
   business: 50000,
 };
 
+export const maxDuration = 30;
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const url = searchParams.get("url");
@@ -38,7 +40,7 @@ export async function GET(req: Request) {
     .single();
 
   const plan = user?.plan ?? "free";
-  const limit = DAILY_LIMITS[plan];
+  const limit = DAILY_LIMITS[plan] ?? DAILY_LIMITS.free;
 
   const { count } = await supabase
     .from("usage_logs")
@@ -58,11 +60,20 @@ export async function GET(req: Request) {
   const apiPath = endpoint === "quick-score" ? "/quick-score" : endpoint === "metadata" ? "/metadata" : "/analyze";
   const start = Date.now();
 
-  const upstream = await fetch(`${apiBase}${apiPath}?url=${encodeURIComponent(url)}`, {
-    headers: process.env.SEO_API_KEY ? { "X-API-Key": process.env.SEO_API_KEY } : {},
-  });
+  let upstream: Response;
+  let result: Record<string, unknown>;
+  try {
+    upstream = await fetch(`${apiBase}${apiPath}?url=${encodeURIComponent(url)}`, {
+      headers: process.env.SEO_API_KEY ? { "X-API-Key": process.env.SEO_API_KEY } : {},
+      signal: AbortSignal.timeout(25_000),
+      cache: "no-store",
+    });
+    result = await upstream.json();
+  } catch {
+    return Response.json({ error: "The analysis service is unavailable. Try again shortly." }, { status: 502 });
+  }
   const duration = Date.now() - start;
-  const result = await upstream.json();
+  const score = typeof result?.seo_score === "number" ? Math.round(result.seo_score) : null;
 
   // Log usage
   await supabase.from("usage_logs").insert({
@@ -70,7 +81,7 @@ export async function GET(req: Request) {
     key_id: keyRow.id,
     endpoint: apiPath,
     url,
-    score: result?.seo_score ?? null,
+    score,
     status: upstream.status,
     duration_ms: duration,
   });

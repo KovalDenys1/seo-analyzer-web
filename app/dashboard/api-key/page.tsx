@@ -35,7 +35,19 @@ export default function ApiKeyPage() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    let active = true;
+    fetch("/api/keys")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!active) return;
+        setKeys(Array.isArray(data) ? data : []);
+        setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const generate = async () => {
     setBusy(true);

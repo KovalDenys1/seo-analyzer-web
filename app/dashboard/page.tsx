@@ -45,14 +45,14 @@ export default async function OverviewPage() {
     .order("created_at", { ascending: false })
     .limit(7);
 
+  const now = new Date();
   const recentRows = (logs ?? []).map((r) => {
-    const age = Math.round((Date.now() - new Date(r.created_at).getTime()) / 1000);
+    const age = Math.round((now.getTime() - new Date(r.created_at).getTime()) / 1000);
     const t = age < 60 ? `${age}s ago` : age < 3600 ? `${Math.round(age / 60)}m ago` : `${Math.round(age / 3600)}h ago`;
     return { url: r.url ?? "—", ep: r.endpoint, score: r.score, ok: r.status < 400, t };
   });
 
   // Hours until midnight reset
-  const now = new Date();
   const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
   const hoursLeft = Math.round((midnight.getTime() - now.getTime()) / 3600000);
 
