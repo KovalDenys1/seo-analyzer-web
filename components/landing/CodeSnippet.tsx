@@ -1,90 +1,40 @@
-import { Copy } from "@/components/ui/Icons";
+import { APIFY_API_URL } from "@/lib/site";
+
+const K = ({ children }: { children: React.ReactNode }) => (
+  <span style={{ color: "#7dd3fc" }}>{children}</span>
+);
+const S = ({ children }: { children: React.ReactNode }) => (
+  <span style={{ color: "#fde68a" }}>{children}</span>
+);
+const N = ({ children }: { children: React.ReactNode }) => (
+  <span style={{ color: "#fbbf24" }}>{children}</span>
+);
+const P = ({ children }: { children: React.ReactNode }) => (
+  <span style={{ color: "#9ca3af" }}>{children}</span>
+);
 
 export default function CodeSnippet() {
   return (
-    <section
-      style={{
-        padding: "64px 56px",
-        background: "var(--ink-50)",
-        borderTop: "1px solid var(--ink-100)",
-        borderBottom: "1px solid var(--ink-100)",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 1080,
-          margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns: "1fr 1.2fr",
-          gap: 56,
-          alignItems: "center",
-        }}
-      >
+    <section id="api" className="section section-tinted">
+      <div className="container grid-code">
         <div>
-          <div
-            className="mono"
-            style={{
-              fontSize: 12,
-              color: "var(--teal)",
-              textTransform: "uppercase",
-              letterSpacing: 1.4,
-            }}
-          >
-            Three lines
-          </div>
-          <h2
-            style={{
-              margin: "8px 0 16px",
-              fontSize: 34,
-              letterSpacing: -1,
-              color: "var(--ink-900)",
-            }}
-          >
-            Drop it into anything that speaks HTTP.
+          <div className="mono eyebrow">API</div>
+          <h2 className="section-title" style={{ fontSize: 34 }}>
+            One request. JSON back.
           </h2>
-          <p
-            style={{
-              margin: 0,
-              fontSize: 15.5,
-              color: "var(--ink-500)",
-              lineHeight: 1.6,
-            }}
-          >
-            A single REST endpoint. JSON in, JSON out. SDKs available for Node,
-            Python, Go, Ruby and PHP &mdash; or just{" "}
-            <code
-              className="mono"
-              style={{
-                color: "var(--ink-700)",
-                background: "#fff",
-                padding: "1px 6px",
-                borderRadius: 4,
-                border: "1px solid var(--ink-200)",
-              }}
-            >
-              curl
-            </code>
+          <p className="section-sub" style={{ lineHeight: 1.6 }}>
+            The analyzer runs on Apify, so you can call it from anything that speaks HTTP, schedule
+            it, or plug it into Make, Zapier or n8n. Send a list of URLs, or one start URL in{" "}
+            <code className="mono inline-code">site</code> mode to crawl up to 100 pages.{" "}
+            <a href={APIFY_API_URL} target="_blank" rel="noopener" className="link-teal">
+              API reference
+            </a>
             .
           </p>
         </div>
 
-        <div
-          style={{
-            background: "#0b1220",
-            borderRadius: 14,
-            overflow: "hidden",
-            boxShadow: "var(--shadow-lg)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "12px 16px",
-              borderBottom: "1px solid #1f2937",
-            }}
-          >
+        <div className="terminal">
+          <div className="terminal-head">
             <div style={{ display: "flex", gap: 6 }}>
               {[0, 1, 2].map((i) => (
                 <span
@@ -96,60 +46,33 @@ export default function CodeSnippet() {
             <span className="mono" style={{ fontSize: 11, color: "#6b7280" }}>
               terminal
             </span>
-            <span
-              style={{
-                fontSize: 11,
-                color: "#6b7280",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 4,
-                cursor: "pointer",
-              }}
-            >
-              <Copy size={12} color="#6b7280" /> Copy
-            </span>
+            <span />
           </div>
-          <pre
-            className="mono"
-            style={{
-              margin: 0,
-              padding: 22,
-              fontSize: 13,
-              color: "#e5e7eb",
-              lineHeight: 1.7,
-              overflowX: "auto",
-            }}
-          >
+          <pre className="mono terminal-body">
             <span style={{ color: "#5eead4" }}>$</span>
-            {" curl https://api.seo-analyzer.dev/v1/analyze \\\n"}
-            {"  -H "}
-            <span style={{ color: "#fde68a" }}>&quot;Authorization: Bearer sk_live_...&quot;</span>
-            {" \\\n"}
-            {"  -d "}
-            <span style={{ color: "#fde68a" }}>
-              {`'{"url":"https://stripe.com/pricing"}'`}
-            </span>
+            {" curl -X POST \\\n"}
+            {"  "}
+            <S>&quot;https://api.apify.com/v2/acts/seo-audit-lab~saas-seo-analyzer/run-sync-get-dataset-items?token=$APIFY_TOKEN&quot;</S>
+            {" \\\n  -H "}
+            <S>&quot;Content-Type: application/json&quot;</S>
+            {" \\\n  -d "}
+            <S>{`'{"urls":["https://example.com"],"mode":"quick"}'`}</S>
             {"\n\n"}
-            <span style={{ color: "#9ca3af" }}>{"{"}</span>
+            <P>{"[{"}</P>
             {"\n  "}
-            <span style={{ color: "#7dd3fc" }}>&quot;score&quot;</span>
-            {": "}
-            <span style={{ color: "#fbbf24" }}>87</span>
-            {",\n  "}
-            <span style={{ color: "#7dd3fc" }}>&quot;meta&quot;</span>
-            {": "}
-            <span style={{ color: "#9ca3af" }}>{"{ "}</span>
-            <span style={{ color: "#7dd3fc" }}>&quot;title&quot;</span>
-            {": "}
-            <span style={{ color: "#fde68a" }}>&quot;Pricing — Stripe&quot;</span>
-            <span style={{ color: "#9ca3af" }}>{" }"}</span>
-            {",\n  "}
-            <span style={{ color: "#7dd3fc" }}>&quot;warnings&quot;</span>
-            {": "}
-            <span style={{ color: "#9ca3af" }}>{"["}</span>
-            <span style={{ color: "#fde68a" }}>&quot;missing_canonical&quot;</span>
-            <span style={{ color: "#9ca3af" }}>{"]\n"}</span>
-            <span style={{ color: "#9ca3af" }}>{"}"}</span>
+            <K>&quot;type&quot;</K>: <S>&quot;quick&quot;</S>,{"\n  "}
+            <K>&quot;url&quot;</K>: <S>&quot;https://example.com/&quot;</S>,{"\n  "}
+            <K>&quot;seo_score&quot;</K>: <N>77.8</N>, <K>&quot;seo_grade&quot;</K>: <S>&quot;C&quot;</S>,{"\n  "}
+            <K>&quot;saas_score&quot;</K>: <N>67.2</N>, <K>&quot;issue_count&quot;</K>: <N>12</N>,{"\n  "}
+            <K>&quot;warnings&quot;</K>: <P>[</P>
+            <S>&quot;Meta description is missing&quot;</S>, <S>&quot;No H1 heading found&quot;</S>, <P>…]</P>,
+            {"\n  "}
+            <K>&quot;top_recommendations&quot;</K>: <P>[{"{ "}</P>
+            <K>&quot;title&quot;</K>: <S>&quot;No crawlable internal links&quot;</S>,{" "}
+            <K>&quot;impact&quot;</K>: <S>&quot;high&quot;</S>, <K>&quot;effort&quot;</K>: <S>&quot;low&quot;</S>,{" "}
+            <P>… {"}"}, …]</P>
+            {"\n"}
+            <P>{"}]"}</P>
           </pre>
         </div>
       </div>

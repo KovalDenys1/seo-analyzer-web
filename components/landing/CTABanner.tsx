@@ -1,83 +1,25 @@
 import { ArrowR } from "@/components/ui/Icons";
-import Link from "next/link";
+import { APIFY_ACTOR_URL } from "@/lib/site";
 
 export default function CTABanner() {
   return (
-    <section style={{ padding: "88px 56px" }}>
-      <div
-        style={{
-          maxWidth: 1080,
-          margin: "0 auto",
-          position: "relative",
-          background: "linear-gradient(135deg, var(--ink-900) 0%, #042f2e 100%)",
-          borderRadius: 20,
-          padding: "64px 56px",
-          overflow: "hidden",
-          color: "#fff",
-          textAlign: "center",
-        }}
-      >
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage:
-              "radial-gradient(circle at 20% 0%, rgba(13,148,136,.5), transparent 40%)," +
-              "radial-gradient(circle at 80% 100%, rgba(94,234,212,.25), transparent 40%)",
-          }}
-        />
+    <section className="section">
+      <div className="container cta-banner">
+        <div aria-hidden className="cta-banner-bg" />
         <div style={{ position: "relative" }}>
-          <h2 style={{ margin: 0, fontSize: 40, letterSpacing: -1.2 }}>
-            Start free, upgrade when ready.
-          </h2>
-          <p
-            style={{
-              margin: "12px auto 28px",
-              maxWidth: 520,
-              fontSize: 16,
-              color: "#9ca3af",
-            }}
-          >
-            100 free requests per day, no credit card. Set up your first key in
-            under a minute.
+          <h2 className="cta-title">Audit the whole site, not just the homepage.</h2>
+          <p className="cta-sub">
+            A site audit crawls up to 100 pages and finds what a single page cannot show: broken
+            internal links, duplicate titles and descriptions, orphan pages and gaps in your
+            pricing, feature and comparison pages.
           </p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
-            <Link
-              href="/signup"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "12px 22px",
-                background: "var(--teal)",
-                color: "#fff",
-                borderRadius: 8,
-                fontSize: 14,
-                fontWeight: 600,
-                textDecoration: "none",
-                boxShadow: "0 1px 0 rgba(255,255,255,.2) inset, 0 1px 2px rgba(13,148,136,.4)",
-              }}
-            >
-              Sign Up <ArrowR size={14} />
-            </Link>
-            <Link
-              href="/docs"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                padding: "12px 22px",
-                background: "transparent",
-                color: "#fff",
-                border: "1px solid rgba(255,255,255,.2)",
-                borderRadius: 8,
-                fontSize: 14,
-                fontWeight: 500,
-                textDecoration: "none",
-              }}
-            >
-              Read the docs
-            </Link>
+          <div className="cta-actions">
+            <a href={APIFY_ACTOR_URL} target="_blank" rel="noopener" className="btn-teal btn-lg">
+              Run a site audit on Apify <ArrowR size={14} />
+            </a>
+            <a href="#try" className="btn-ghost-dark btn-lg">
+              Try one page free
+            </a>
           </div>
         </div>
       </div>

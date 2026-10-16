@@ -1,88 +1,34 @@
 import { Logo, ArrowR } from "@/components/ui/Icons";
 import Link from "next/link";
+import { APIFY_ACTOR_URL, SITE_NAME } from "@/lib/site";
+
+const links = [
+  { label: "Checks", href: "/#checks" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Docs", href: "/docs" },
+];
 
 export default function Navbar() {
   return (
-    <header
-      className="glass"
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "18px 56px",
-        borderBottom: "1px solid var(--ink-100)",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+    <header className="glass navbar">
+      <Link href="/" className="brand" aria-label={`${SITE_NAME} home`}>
         <Logo size={24} />
         <span style={{ fontWeight: 700, letterSpacing: -0.2, fontSize: 16 }}>
-          seo<span style={{ color: "var(--teal)" }}>.</span>analyzer
+          SEO Audit <span style={{ color: "var(--teal)" }}>Lab</span>
         </span>
-        <span
-          className="mono"
-          style={{
-            marginLeft: 10,
-            fontSize: 11,
-            padding: "2px 7px",
-            background: "var(--ink-100)",
-            borderRadius: 4,
-            color: "var(--ink-500)",
-          }}
-        >
-          v1.4
-        </span>
-      </div>
+      </Link>
 
-      <nav style={{ display: "flex", gap: 28, fontSize: 14, color: "var(--ink-600)" }}>
-        {["Pricing", "Docs", "Changelog", "Blog"].map((item) => (
-          <Link
-            key={item}
-            href={`#${item.toLowerCase()}`}
-            style={{ color: "inherit", textDecoration: "none" }}
-          >
-            {item}
+      <nav className="navbar-links">
+        {links.map((item) => (
+          <Link key={item.label} href={item.href}>
+            {item.label}
           </Link>
         ))}
       </nav>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <Link
-          href="/login"
-          style={{
-            padding: "8px 12px",
-            background: "transparent",
-            color: "var(--ink-700)",
-            border: "none",
-            borderRadius: 8,
-            fontSize: 13,
-            fontWeight: 500,
-            textDecoration: "none",
-          }}
-        >
-          Login
-        </Link>
-        <Link
-          href="/signup"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "8px 14px",
-            background: "var(--teal)",
-            color: "#fff",
-            borderRadius: 8,
-            fontSize: 13,
-            fontWeight: 600,
-            textDecoration: "none",
-            boxShadow: "0 1px 0 rgba(255,255,255,.2) inset, 0 1px 2px rgba(13,148,136,.4)",
-          }}
-        >
-          Sign Up <ArrowR size={14} />
-        </Link>
-      </div>
+      <a href={APIFY_ACTOR_URL} target="_blank" rel="noopener" className="btn-teal btn-sm">
+        Run on Apify <ArrowR size={14} />
+      </a>
     </header>
   );
 }
