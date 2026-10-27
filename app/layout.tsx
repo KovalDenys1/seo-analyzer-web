@@ -34,6 +34,9 @@ export const metadata: Metadata = {
     title: `${SITE_NAME} – Free SEO audit for SaaS and product sites`,
     description: SITE_DESCRIPTION,
   },
+  verification: {
+    google: "sngvUdeIGXMXS8-E9Bd41ZZxIOEeHqxxZXkYPqiTMkY",
+  },
 };
 
 export default function RootLayout({
