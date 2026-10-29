@@ -1,3 +1,6 @@
+import { after } from "next/server";
+import { supabase } from "@/lib/supabase";
+
 export const maxDuration = 30;
 
 const WINDOW_MS = 60 * 60 * 1000;
@@ -67,26 +70,42 @@ export async function POST(req: Request) {
     );
   }
 
+  const started = Date.now();
+  const result = await audit(url, req);
+  const durationMs = Date.now() - started;
+  after(async () => {
+    const { error } = await supabase.from("try_audits").insert({
+      host: new URL(url).hostname,
+      status: result.status,
+      score: result.score,
+      duration_ms: durationMs,
+    });
+    if (error) console.error(`try-audit log failed: ${error.message}`);
+  });
+  return Response.json(result.body, {
+    status: result.status,
+    headers: result.status === 200 ? { "Cache-Control": "no-store" } : undefined,
+  });
+}
+
+type AuditResult = { status: number; score: number | null; body: unknown };
+
+function fail(status: number, code: string, message: string): AuditResult {
+  return { status, score: null, body: { error: { code, message } } };
+}
+
+async function audit(url: string, req: Request): Promise<AuditResult> {
   const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
   if (!allow(ip)) {
-    return Response.json(
-      {
-        error: {
-          code: "rate_limited",
-          message: `The free audit runs ${PER_IP_LIMIT} pages an hour. For more, use the API key or the Apify actor.`,
-        },
-      },
-      { status: 429 }
+    return fail(
+      429,
+      "rate_limited",
+      `The free audit runs ${PER_IP_LIMIT} pages an hour. For more, use the API key or the Apify actor.`
     );
   }
 
   const apiBase = process.env.SEO_API_BASE_URL;
-  if (!apiBase) {
-    return Response.json(
-      { error: { code: "not_configured", message: "The audit service is not configured." } },
-      { status: 503 }
-    );
-  }
+  if (!apiBase) return fail(503, "not_configured", "The audit service is not configured.");
 
   const started = Date.now();
   let upstream: Response;
@@ -97,32 +116,22 @@ export async function POST(req: Request) {
       cache: "no-store",
     });
   } catch {
-    return Response.json(
-      { error: { code: "upstream_unavailable", message: "The audit service did not answer in time. Try again in a minute." } },
-      { status: 504 }
-    );
+    return fail(504, "upstream_unavailable", "The audit service did not answer in time. Try again in a minute.");
   }
 
   let data: Record<string, unknown>;
   try {
     data = await upstream.json();
   } catch {
-    return Response.json(
-      { error: { code: "upstream_error", message: "The audit service returned an unexpected response." } },
-      { status: 502 }
-    );
+    return fail(502, "upstream_error", "The audit service returned an unexpected response.");
   }
 
   if (!upstream.ok) {
     const err = (data.error ?? {}) as { code?: string; message?: string };
-    return Response.json(
-      {
-        error: {
-          code: err.code ?? "audit_failed",
-          message: err.message ?? "That page could not be audited.",
-        },
-      },
-      { status: upstream.status === 401 ? 503 : upstream.status }
+    return fail(
+      upstream.status === 401 ? 503 : upstream.status,
+      err.code ?? "audit_failed",
+      err.message ?? "That page could not be audited."
     );
   }
 
@@ -152,10 +161,10 @@ export async function POST(req: Request) {
       why,
     }));
 
-  console.log(`try-audit host=${new URL(url).hostname} score=${score?.overall} ms=${Date.now() - started}`);
-
-  return Response.json(
-    {
+  return {
+    status: 200,
+    score: score?.overall ?? null,
+    body: {
       url: data.final_url ?? url,
       status_code: fetchInfo?.status_code ?? null,
       title: metadata?.title ?? null,
@@ -166,6 +175,5 @@ export async function POST(req: Request) {
       recommendations,
       duration_ms: Date.now() - started,
     },
-    { headers: { "Cache-Control": "no-store" } }
-  );
+  };
 }

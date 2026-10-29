@@ -1,6 +1,5 @@
 import PageHead from "@/components/dashboard/PageHead";
 import StatTile from "@/components/dashboard/StatTile";
-import Pill from "@/components/ui/Pill";
 import Table from "@/components/ui/Table";
 import Bar from "@/components/ui/Bar";
 import { ensureUser } from "@/lib/ensure-user";

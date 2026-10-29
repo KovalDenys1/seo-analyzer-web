@@ -9,13 +9,14 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <TextPage title="Privacy" updated="16 October 2026">
+    <TextPage title="Privacy" updated="29 October 2026">
       <h2>Free audit on this site</h2>
       <p>
         When you audit a page, we fetch the public address you enter and analyse the HTML it
-        returns. We keep the host name, the score and the response time in our server logs to run
-        the service. Your IP address is held in memory for up to an hour to enforce the free limit
-        and is not stored. We do not use advertising or analytics cookies.
+        returns. We store the host name, the score and the response time to run the service and
+        count how it is used. Your IP address is held in memory for up to an hour to enforce the
+        free limit and is not stored. Page views are counted with Vercel Web Analytics, which sets no
+        cookies and does not identify you. We do not use advertising cookies.
       </p>
       <h2>Accounts and API keys</h2>
       <p>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import PageHead from "@/components/dashboard/PageHead";
 import Pill from "@/components/ui/Pill";
-import { Eye, EyeOff, Copy, Refresh, Alert, Plus, X } from "@/components/ui/Icons";
+import { Copy, Refresh, Alert, Plus, X } from "@/components/ui/Icons";
 
 interface ApiKey {
   id: string;

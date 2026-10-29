@@ -1,4 +1,3 @@
-import { SVGProps } from "react";
 
 type IconProps = { size?: number; color?: string; stroke?: number };
 
