@@ -30,13 +30,17 @@ The only working payment path is the Apify actor ([seo-audit-lab/saas-seo-analyz
 | 13 | Apify Store listing has 0 reviews, and its README does not link to the free audit | Store ranking leans on users and reviews | **Partly fixed.** The README link is in `967f60a`, but it reaches the Store only with an `apify push` from `apify-actor/` (see 13a). Ask the first real users for a review |
 | 13a | The analyzer missed small client-rendered shells. A Vite or CRA homepage of about 1.5 KB was reported as thin content with no H1 instead of as a JavaScript shell, because the check needed more than 10 KB of HTML | Wrong diagnosis on exactly the SaaS sites we pitch | **Fixed** `4240cce`, live on Render. The actor is pinned to it in `967f60a`, and pinned tests pass, but the Store build changes only after `apify push` from `apify-actor/` |
 | 14 | Supabase `saas-db` is paused, and restoring it is refused by the 2-free-project limit (`boardly-db` and `boardly-dev` hold both slots) | The API-key path is down | **Fixed 27.10.** The database moved to Postgres + PostgREST on the Oracle VM (SEO-Analyzer-API `deploy/oracle/wrapper-db`), and the site reaches it with supabase-js unchanged. Key lookup, usage logging and the dashboard calls were checked against it, starting from an empty database. The landing page still does not link sign-up while Clerk is a development instance |
-| 15 | No usage signal on the site beyond Vercel function logs | Cannot tell whether strangers try it | **Partly fixed.** Each free audit logs `try-audit host=… score=…`. Vercel Web Analytics (free on Hobby) is still open |
+| 15 | No usage signal on the site beyond Vercel function logs | Cannot tell whether strangers try it | **Fixed 29.10** `25db876`. Each free audit is a row in `try_audits` (host, status, score, duration; no IP), and Vercel Web Analytics counts page views |
 | 16 | Stripe billing on the site | Only matters if buyers want a monthly API plan rather than pay per page | **Deferred.** Only if the actor shows demand (see the Reference note's build plan) |
 | 17 | Free-audit rate limit is per serverless instance, in memory | A determined script could load the Render free instance | **Open, low.** Move to a shared store if abuse shows up in the logs |
 | 18 | Leads agent on the Pi still targets Ukrainian local businesses | The automated pipeline produces leads the product does not fit | **Open.** Retarget it to SaaS and product sites in English, using today's manual list as the pilot |
-| 19 | Housekeeping. Backend Dependabot PRs #5, #6 and #7. Four unused-import lint warnings on the site | None for the first customer | **Open, low** |
+| 19 | Housekeeping. Backend Dependabot PRs #5, #6 and #7. Four unused-import lint warnings on the site | None for the first customer | **Fixed.** The Dependabot PRs were merged 19.10, the lint warnings removed 29.10 in `25db876` |
 
 ## Not gaps
 
 - Backend API. 96 tests and the 14 actor tests pass. Live `/v1/analyze` handles bad URLs, private addresses and DNS failures with clean errors. Render keep-warm from the Pi works (`/healthz` 200 in 0.3 s).
 - Apify payment. Pay-per-event pricing is live, failed pages are not charged, and Apify's free plan gives a stranger $5 a month with no card.
+
+## Next gate
+
+30.11. Billing (gap 16) is built only if one of these shows: a paid Apify run by someone else, three human replies to outreach, or 100+ site visits in 30 days. Otherwise the line is frozen and left running at no cost.
