@@ -3,10 +3,17 @@ import { SITE_URL } from "@/lib/site";
 import { GUIDES } from "@/components/landing/GuideEnd";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const pages = ["", "/docs", "/guides", ...GUIDES.map((g) => `/guides/${g.slug}`), "/contact", "/privacy", "/terms"];
-  return pages.map((path) => ({
+  const pages: { path: string; lastModified?: string }[] = [
+    { path: "" },
+    { path: "/docs" },
+    { path: "/guides" },
+    ...GUIDES.map((g) => ({ path: `/guides/${g.slug}`, lastModified: g.updated })),
+    { path: "/contact" },
+    { path: "/privacy" },
+    { path: "/terms" },
+  ];
+  return pages.map(({ path, lastModified }) => ({
     url: `${SITE_URL}${path || "/"}`,
-    changeFrequency: path ? "monthly" : "weekly",
-    priority: path ? 0.5 : 1,
+    ...(lastModified ? { lastModified } : {}),
   }));
 }

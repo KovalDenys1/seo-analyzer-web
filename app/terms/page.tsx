@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import TextPage from "@/components/landing/TextPage";
 
-export const metadata: Metadata = {
-  title: "Terms",
-  description: "The terms for using the SEO Audit Lab site, free audit and API.",
-  alternates: { canonical: "/terms" },
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Terms of use",
+  description:
+    "The terms for using the SEO Audit Lab site, free audit and API.",
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

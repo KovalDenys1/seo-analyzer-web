@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import TextPage from "@/components/landing/TextPage";
 import { APIFY_ACTOR_URL, APIFY_API_URL, GITHUB_URL, METHODOLOGY_URL, SITE_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Docs",
+export const metadata: Metadata = pageMetadata({
+  title: "Docs: free page audit, Apify actor and API",
   description:
     "How to run SEO Audit Lab: the free page audit, the Apify actor's modes and API, the site's own API key, and how the score is calculated.",
-  alternates: { canonical: "/docs" },
-};
+  path: "/docs",
+});
 
 const runSync = `curl -X POST \\
   "https://api.apify.com/v2/acts/seo-audit-lab~saas-seo-analyzer/run-sync-get-dataset-items?token=$APIFY_TOKEN" \\

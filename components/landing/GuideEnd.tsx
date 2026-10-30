@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
-export type Guide = { slug: string; title: string; description: string; updated: string };
+export type Guide = { slug: string; title: string; description: string; published: string; updated: string };
 
 export const GUIDES: Guide[] = [
   {
@@ -9,6 +9,7 @@ export const GUIDES: Guide[] = [
     title: "Is my site a JavaScript shell?",
     description:
       "How to tell in one minute whether crawlers get your page or an empty <div id=\"root\">, with curl, view-source and a free audit.",
+    published: "2026-10-30",
     updated: "2026-10-30",
   },
   {
@@ -16,6 +17,7 @@ export const GUIDES: Guide[] = [
     title: "SEO for a Vite or React single-page app",
     description:
       "Five ways to give a Vite, Create React App or React Router SPA real HTML for crawlers, from prerendering a few routes to full SSR.",
+    published: "2026-10-30",
     updated: "2026-10-30",
   },
   {
@@ -23,6 +25,7 @@ export const GUIDES: Guide[] = [
     title: "Why Google sees an empty page",
     description:
       "What Googlebot, link previews and AI crawlers each do with a client-rendered page, and why \"Google renders JavaScript\" is not the whole answer.",
+    published: "2026-10-30",
     updated: "2026-10-30",
   },
 ];
@@ -33,6 +36,7 @@ export function guideJsonLd(guide: Guide) {
     "@type": "TechArticle",
     headline: guide.title,
     description: guide.description,
+    datePublished: guide.published,
     dateModified: guide.updated,
     url: `${SITE_URL}/guides/${guide.slug}`,
     author: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },

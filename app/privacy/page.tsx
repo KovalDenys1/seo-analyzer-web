@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import TextPage from "@/components/landing/TextPage";
 import { CONTACT_EMAIL } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Privacy",
-  description: "What SEO Audit Lab collects when you run an audit or create an account, and why.",
-  alternates: { canonical: "/privacy" },
-};
+  description:
+    "What SEO Audit Lab collects when you run an audit or create an account, and why.",
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

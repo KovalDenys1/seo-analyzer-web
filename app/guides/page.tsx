@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import TextPage from "@/components/landing/TextPage";
 import { GUIDES } from "@/components/landing/GuideEnd";
 
-export const metadata: Metadata = {
-  title: "Guides",
+export const metadata: Metadata = pageMetadata({
+  title: "Guides to SEO for JavaScript-rendered sites",
   description:
     "Short guides on JavaScript-rendered sites and SEO: how to check for an empty page, why crawlers miss it, and how to fix it in a Vite or React app.",
-  alternates: { canonical: "/guides" },
-};
+  path: "/guides",
+});
 
 export default function GuidesPage() {
   return (

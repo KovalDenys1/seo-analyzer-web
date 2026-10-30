@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import TextPage from "@/components/landing/TextPage";
 import { APIFY_ISSUES_URL, CONTACT_EMAIL, GITHUB_ISSUES_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact",
-  description: "How to reach SEO Audit Lab with a question, a bug report or a feature request.",
-  alternates: { canonical: "/contact" },
-};
+  description:
+    "How to reach SEO Audit Lab with a question, a bug report or a feature request.",
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

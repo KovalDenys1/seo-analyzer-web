@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import TextPage from "@/components/landing/TextPage";
 import GuideEnd, { GUIDES, guideJsonLd } from "@/components/landing/GuideEnd";
 
 const guide = GUIDES[0];
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: guide.title,
   description: guide.description,
-  alternates: { canonical: `/guides/${guide.slug}` },
-};
+  path: `/guides/${guide.slug}`,
+  article: { published: guide.published, modified: guide.updated },
+});
 
 const shell = `<!DOCTYPE html>
 <html lang="en">
