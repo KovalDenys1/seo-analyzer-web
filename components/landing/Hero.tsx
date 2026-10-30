@@ -9,7 +9,7 @@ export default function Hero() {
 
       <div style={{ position: "relative" }}>
         <span className="mono hero-badge">
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--teal)" }} />
+          <span className="hero-dot" />
           Free page audit · no sign-up
         </span>
 

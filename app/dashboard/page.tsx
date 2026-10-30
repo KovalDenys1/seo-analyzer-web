@@ -99,7 +99,7 @@ export default async function OverviewPage() {
             <span style={{ fontSize: 12, color: "var(--ink-500)" }}>{pct}% used</span>
           </div>
           <div style={{ height: 10, background: "var(--ink-100)", borderRadius: 999, overflow: "hidden" }}>
-            <div style={{
+            <div className="bar-fill" style={{
               width: `${pct}%`, height: "100%",
               background: pct > 90 ? "var(--red)" : "linear-gradient(90deg, var(--teal) 0%, #5eead4 100%)",
             }} />

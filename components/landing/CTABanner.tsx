@@ -1,10 +1,11 @@
 import { ArrowR } from "@/components/ui/Icons";
 import { APIFY_ACTOR_URL } from "@/lib/site";
+import Reveal from "@/components/motion/Reveal";
 
 export default function CTABanner() {
   return (
     <section className="section">
-      <div className="container cta-banner">
+      <Reveal className="container cta-banner">
         <div aria-hidden className="cta-banner-bg" />
         <div style={{ position: "relative" }}>
           <h2 className="cta-title">Audit the whole site, not just the homepage.</h2>
@@ -22,7 +23,7 @@ export default function CTABanner() {
             </a>
           </div>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

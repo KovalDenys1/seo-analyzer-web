@@ -1,4 +1,11 @@
 import { APIFY_API_URL } from "@/lib/site";
+import Reveal from "@/components/motion/Reveal";
+import CopyButton from "@/components/ui/CopyButton";
+
+const CURL = `curl -X POST \\
+  "https://api.apify.com/v2/acts/seo-audit-lab~saas-seo-analyzer/run-sync-get-dataset-items?token=$APIFY_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"urls":["https://example.com"],"mode":"quick"}'`;
 
 const K = ({ children }: { children: React.ReactNode }) => (
   <span style={{ color: "#7dd3fc" }}>{children}</span>
@@ -17,7 +24,7 @@ export default function CodeSnippet() {
   return (
     <section id="api" className="section section-tinted">
       <div className="container grid-code">
-        <div>
+        <Reveal>
           <div className="mono eyebrow">API</div>
           <h2 className="section-title" style={{ fontSize: 34 }}>
             One request. JSON back.
@@ -31,9 +38,9 @@ export default function CodeSnippet() {
             </a>
             .
           </p>
-        </div>
+        </Reveal>
 
-        <div className="terminal">
+        <Reveal className="terminal" delay={0.1}>
           <div className="terminal-head">
             <div style={{ display: "flex", gap: 6 }}>
               {[0, 1, 2].map((i) => (
@@ -46,7 +53,7 @@ export default function CodeSnippet() {
             <span className="mono" style={{ fontSize: 11, color: "#9ca3af" }}>
               terminal
             </span>
-            <span />
+            <CopyButton text={CURL} className="terminal-copy" size={12} label="Copy" />
           </div>
           <pre className="mono terminal-body">
             <span style={{ color: "#5eead4" }}>$</span>
@@ -74,7 +81,7 @@ export default function CodeSnippet() {
             {"\n"}
             <P>{"}]"}</P>
           </pre>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

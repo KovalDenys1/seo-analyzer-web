@@ -158,8 +158,9 @@ export default async function UsagePage() {
               return (
                 <div
                   key={i}
+                  className="chart-col"
                   title={`${formatLabel(days[i])}: ${v} request${v === 1 ? "" : "s"}`}
-                  style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", height: "100%" }}
+                  style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", height: "100%", "--i": i } as React.CSSProperties}
                 >
                   {v === 0 && <div style={{ height: 2, background: "var(--ink-100)" }} />}
                   {c > 0 && <div style={{ height: `${(c / maxVal) * 100}%`, background: "#cffafe" }} />}

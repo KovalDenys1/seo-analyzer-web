@@ -12,6 +12,7 @@ export default function Bar({ pct }: { pct: number }) {
         }}
       >
         <div
+          className="bar-fill"
           style={{ width: `${pct}%`, height: "100%", background: "var(--teal)" }}
         />
       </div>

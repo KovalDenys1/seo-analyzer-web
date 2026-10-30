@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import Reveal from "@/components/motion/Reveal";
 import { Tag, Heading, Link as LinkIcon, Image as ImageIcon, Key, Speed } from "@/components/ui/Icons";
 import type { ComponentType } from "react";
 
@@ -46,7 +47,7 @@ export default function Features() {
   return (
     <section id="checks" className="section section-ruled">
       <div className="container">
-        <div style={{ marginBottom: 40 }}>
+        <Reveal style={{ marginBottom: 40 }}>
           <div className="mono eyebrow">What it checks</div>
           <h2 className="section-title">Every point off the score has a reason.</h2>
           <p className="section-sub" style={{ maxWidth: 560 }}>
@@ -54,9 +55,9 @@ export default function Features() {
             cost. Each fix says what to change, why, the expected impact, the effort and how to
             check it worked.
           </p>
-        </div>
+        </Reveal>
 
-        <figure className="report-shot">
+        <Reveal as="figure" className="report-shot">
           <Image
             src="/report-screenshot.png"
             width={1520}
@@ -68,11 +69,11 @@ export default function Features() {
             A real report on the <Link href="/demo/spa-shell">demo Vite shell</Link>: the fix that
             matters comes first, with the byte and word counts behind it.
           </figcaption>
-        </figure>
+        </Reveal>
 
         <div className="grid-3">
-          {cards.map((card) => (
-            <div key={card.title} className="card">
+          {cards.map((card, i) => (
+            <Reveal key={card.title} className="card" delay={(i % 3) * 0.1}>
               <div className="card-icon">
                 <card.icon size={18} color="var(--teal)" />
               </div>
@@ -82,7 +83,7 @@ export default function Features() {
               <p style={{ margin: 0, fontSize: 13.5, color: "var(--ink-500)", lineHeight: 1.55 }}>
                 {card.desc}
               </p>
-            </div>
+            </Reveal>
           ))}
         </div>
 

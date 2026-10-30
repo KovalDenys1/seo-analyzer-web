@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { AnimatePresence, useReducedMotion } from "motion/react";
+import * as m from "motion/react-m";
 import PageHead from "@/components/dashboard/PageHead";
 import Pill from "@/components/ui/Pill";
+import CopyButton from "@/components/ui/CopyButton";
 import Link from "next/link";
-import { Copy, Refresh, Alert, Plus, X } from "@/components/ui/Icons";
+import { Refresh, Alert, Plus, X } from "@/components/ui/Icons";
 import { SITE_URL } from "@/lib/site";
+import { enterExit } from "@/lib/motion";
 
 interface ApiKey {
   id: string;
@@ -31,7 +35,6 @@ async function fetchKeys(): Promise<ApiKey[]> {
 export default function ApiKeyPage() {
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [revealedKey, setRevealedKey] = useState<string | null>(null); // full key shown once after generation
-  const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -93,160 +96,163 @@ export default function ApiKeyPage() {
     }
   };
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   const activeKey = keys[0];
+  const fx = enterExit(useReducedMotion());
+  const card = { layout: "position" as const, variants: fx, initial: "hidden", animate: "shown", exit: "exit" };
 
   return (
     <>
       <PageHead title="API Key" sub="Your secret key. Treat it like a password." />
-      <div style={{ padding: "var(--dash-pad)", display: "grid", gap: 20, maxWidth: 880 }}>
+      <div style={{ padding: "var(--dash-pad)", display: "grid", gap: 20, maxWidth: 880, position: "relative" }}>
+        <AnimatePresence initial={false} mode="popLayout">
+          {error && (
+            <m.div key="error" {...card} role="alert" style={{ background: "#fff5f5", border: "1px solid #fca5a5", borderRadius: 12, padding: 16, fontSize: 13.5, color: "#991b1b" }}>
+              {error}
+            </m.div>
+          )}
 
-        {error && (
-          <div role="alert" style={{ background: "#fff5f5", border: "1px solid #fca5a5", borderRadius: 12, padding: 16, fontSize: 13.5, color: "#991b1b" }}>
-            {error}
-          </div>
-        )}
+          {revealedKey && (
+            <m.div key="revealed" {...card} style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 12, padding: 16, fontSize: 13.5, color: "#166534" }}>
+              <strong>Key generated.</strong> Copy it now — it won&apos;t be shown again after you leave this page.
+            </m.div>
+          )}
 
-        {revealedKey && (
-          <div style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 12, padding: 16, fontSize: 13.5, color: "#166534" }}>
-            <strong>Key generated.</strong> Copy it now — it won&apos;t be shown again after you leave this page.
-          </div>
-        )}
-
-        {loading ? (
-          <div style={{ padding: 24, color: "var(--ink-500)", fontSize: 14 }}>Loading...</div>
-        ) : activeKey ? (
-          <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, padding: 24 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>Live key</div>
-                <Pill tone="gray">live</Pill>
-              </div>
-              <button
-                onClick={() => setConfirmDelete(true)}
-                style={{ ...btnOutline, color: "var(--red)", borderColor: "var(--red)", padding: "6px 10px", fontSize: 12 }}
-              >
-                <X size={13} /> Delete
-              </button>
-            </div>
-            <div style={{ fontSize: 13, color: "var(--ink-500)" }}>
-              Created {formatDate(activeKey.created_at)}
-              {activeKey.last_used && ` · last used ${formatDate(activeKey.last_used)}`}
-            </div>
-
-            <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-              <div className="mono" style={{
-                flex: 1, height: 48, padding: "0 16px",
-                display: "flex", alignItems: "center",
-                background: "var(--ink-50)", border: "1px solid var(--ink-200)",
-                borderRadius: 10, fontSize: 13.5, color: "var(--ink-800)",
-                letterSpacing: 0.4, overflowX: "auto", whiteSpace: "nowrap", minWidth: 0,
-              }}>
-                {revealedKey ?? `${activeKey.key_prefix}••••••••••••••••••••••••`}
-              </div>
-              {revealedKey && (
+          {loading ? (
+            <m.div key="loading" {...card} style={{ padding: 24, color: "var(--ink-500)", fontSize: 14 }}>Loading...</m.div>
+          ) : activeKey ? (
+            <m.div key="key" {...card} style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, padding: 24 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>Live key</div>
+                  <Pill tone="gray">live</Pill>
+                </div>
                 <button
-                  onClick={() => handleCopy(revealedKey)}
-                  style={{ ...btnOutline, height: 48, padding: "0 14px" }}
+                  onClick={() => setConfirmDelete(true)}
+                  style={{ ...btnOutline, color: "var(--red)", borderColor: "var(--red)", padding: "6px 10px", fontSize: 12 }}
                 >
-                  <Copy size={14} /> {copied ? "Copied!" : "Copy"}
+                  <X size={13} /> Delete
                 </button>
-              )}
-            </div>
-
-            {!revealedKey && (
-              <div style={{ marginTop: 10, fontSize: 12.5, color: "var(--ink-500)" }}>
-                Full key is only visible once after generation. Use <strong>Regenerate</strong> to get a new one.
               </div>
-            )}
-          </div>
-        ) : (
-          <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, padding: 36, textAlign: "center" }}>
-            <div style={{ fontSize: 14.5, color: "var(--ink-500)", marginBottom: 16 }}>No API key yet</div>
-            <button onClick={generate} disabled={busy} style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              padding: "10px 18px", background: "var(--teal)", color: "#fff",
-              border: "none", borderRadius: 10, fontFamily: "inherit",
-              fontSize: 14, fontWeight: 600, cursor: busy ? "default" : "pointer", opacity: busy ? 0.7 : 1,
-            }}>
-              <Plus size={14} /> {busy ? "Generating…" : "Generate key"}
-            </button>
-          </div>
-        )}
+              <div style={{ fontSize: 13, color: "var(--ink-500)" }}>
+                Created {formatDate(activeKey.created_at)}
+                {activeKey.last_used && ` · last used ${formatDate(activeKey.last_used)}`}
+              </div>
 
-        {activeKey && (
-          <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, padding: 24 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Use it</div>
-            <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--ink-500)", lineHeight: 1.55 }}>
-              Send the key as a Bearer token. Each call audits one page and counts toward 100 a day on the free plan.{" "}
-              <Link href="/docs#api-key" style={{ color: "var(--teal)" }}>Full reference</Link>
-            </p>
-            <pre className="mono" style={{ margin: 0, padding: 16, background: "#0b1220", color: "#e5e7eb", borderRadius: 10, fontSize: 12.5, lineHeight: 1.6, overflowX: "auto" }}>
+              <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
+                <div className="mono" style={{
+                  flex: 1, height: 48, padding: "0 16px",
+                  display: "flex", alignItems: "center",
+                  background: "var(--ink-50)", border: "1px solid var(--ink-200)",
+                  borderRadius: 10, fontSize: 13.5, color: "var(--ink-800)",
+                  letterSpacing: 0.4, overflowX: "auto", whiteSpace: "nowrap", minWidth: 0,
+                }}>
+                  <AnimatePresence initial={false} mode="wait">
+                    <m.span
+                      key={revealedKey ?? activeKey.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1, transition: { duration: 0.18 } }}
+                      exit={{ opacity: 0, transition: { duration: 0.15 } }}
+                    >
+                      {revealedKey ?? `${activeKey.key_prefix}••••••••••••••••••••••••`}
+                    </m.span>
+                  </AnimatePresence>
+                </div>
+                <AnimatePresence initial={false}>
+                  {revealedKey && (
+                    <m.div key="copy" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.15 } }}>
+                      <CopyButton text={revealedKey} style={{ ...btnOutline, height: 48, padding: "0 14px" }} />
+                    </m.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {!revealedKey && (
+                <div style={{ marginTop: 10, fontSize: 12.5, color: "var(--ink-500)" }}>
+                  Full key is only visible once after generation. Use <strong>Regenerate</strong> to get a new one.
+                </div>
+              )}
+            </m.div>
+          ) : (
+            <m.div key="empty" {...card} style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, padding: 36, textAlign: "center" }}>
+              <div style={{ fontSize: 14.5, color: "var(--ink-500)", marginBottom: 16 }}>No API key yet</div>
+              <button onClick={generate} disabled={busy} style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                padding: "10px 18px", background: "var(--teal)", color: "#fff",
+                border: "none", borderRadius: 10, fontFamily: "inherit",
+                fontSize: 14, fontWeight: 600, cursor: busy ? "default" : "pointer", opacity: busy ? 0.7 : 1,
+              }}>
+                <Plus size={14} /> {busy ? "Generating…" : "Generate key"}
+              </button>
+            </m.div>
+          )}
+
+          {activeKey && (
+            <m.div key="use" {...card} style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, padding: 24 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Use it</div>
+              <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--ink-500)", lineHeight: 1.55 }}>
+                Send the key as a Bearer token. Each call audits one page and counts toward 100 a day on the free plan.{" "}
+                <Link href="/docs#api-key" style={{ color: "var(--teal)" }}>Full reference</Link>
+              </p>
+              <pre className="mono" style={{ margin: 0, padding: 16, background: "#0b1220", color: "#e5e7eb", borderRadius: 10, fontSize: 12.5, lineHeight: 1.6, overflowX: "auto" }}>
 {`curl "${SITE_URL}/api/analyze?url=example.com" \\
   -H "Authorization: Bearer ${revealedKey ?? "YOUR_KEY"}"`}
-            </pre>
-          </div>
-        )}
+              </pre>
+            </m.div>
+          )}
 
-        {/* Confirm delete */}
-        {confirmDelete && activeKey && (
-          <div style={{ background: "#fff5f5", border: "1px solid #fca5a5", borderRadius: 12, padding: 18 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#991b1b", marginBottom: 6 }}>Delete this key?</div>
-            <p style={{ margin: "0 0 14px", fontSize: 13, color: "#b91c1c", lineHeight: 1.5 }}>
-              The key will stop working immediately. You can generate a new one after.
-            </p>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button
-                onClick={() => deleteKey(activeKey.id)}
-                disabled={busy}
-                style={{ padding: "8px 14px", background: "#dc2626", color: "#fff", border: "none", borderRadius: 8, fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-              >
-                {busy ? "Deleting…" : "Yes, delete"}
-              </button>
-              <button
-                onClick={() => setConfirmDelete(false)}
-                style={{ ...btnOutline }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Regenerate */}
-        {activeKey && !confirmDelete && (
-          <div style={{ background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 12, padding: 18, display: "flex", gap: 14 }}>
-            <div style={{ flexShrink: 0 }}><Alert size={20} color="#b45309" /></div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#78350f" }}>Regenerate API key</div>
-              <p style={{ margin: "4px 0 0", fontSize: 13, color: "#92400e", lineHeight: 1.55 }}>
-                Creates a new key and deletes the current one. Any app using the old key stops working immediately.
+          {confirmDelete && activeKey && (
+            <m.div key="confirm" {...card} style={{ background: "#fff5f5", border: "1px solid #fca5a5", borderRadius: 12, padding: 18 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#991b1b", marginBottom: 6 }}>Delete this key?</div>
+              <p style={{ margin: "0 0 14px", fontSize: 13, color: "#b91c1c", lineHeight: 1.5 }}>
+                The key will stop working immediately. You can generate a new one after.
               </p>
-              <button
-                onClick={generate}
-                disabled={busy}
-                style={{
-                  marginTop: 14, padding: "8px 14px",
-                  background: busy ? "#d97706" : "#b45309",
-                  color: "#fff", border: "none", borderRadius: 8,
-                  fontFamily: "inherit", fontSize: 13, fontWeight: 600,
-                  cursor: busy ? "default" : "pointer",
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                }}
-              >
-                <Refresh size={14} /> {busy ? "Regenerating…" : "Regenerate key"}
-              </button>
-            </div>
-          </div>
-        )}
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={() => deleteKey(activeKey.id)}
+                  disabled={busy}
+                  style={{ padding: "8px 14px", background: "#dc2626", color: "#fff", border: "none", borderRadius: 8, fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+                >
+                  {busy ? "Deleting…" : "Yes, delete"}
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(false)}
+                  style={{ ...btnOutline }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </m.div>
+          )}
+
+          {activeKey && !confirmDelete && (
+            <m.div key="regenerate" {...card} style={{ background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 12, padding: 18, display: "flex", gap: 14 }}>
+              <div style={{ flexShrink: 0 }}><Alert size={20} color="#b45309" /></div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#78350f" }}>Regenerate API key</div>
+                <p style={{ margin: "4px 0 0", fontSize: 13, color: "#92400e", lineHeight: 1.55 }}>
+                  Creates a new key and deletes the current one. Any app using the old key stops working immediately.
+                </p>
+                <button
+                  onClick={generate}
+                  disabled={busy}
+                  style={{
+                    marginTop: 14, padding: "8px 14px",
+                    background: busy ? "#d97706" : "#b45309",
+                    color: "#fff", border: "none", borderRadius: 8,
+                    fontFamily: "inherit", fontSize: 13, fontWeight: 600,
+                    cursor: busy ? "default" : "pointer",
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                  }}
+                >
+                  <Refresh size={14} /> {busy ? "Regenerating…" : "Regenerate key"}
+                </button>
+              </div>
+            </m.div>
+          )}
+        </AnimatePresence>
       </div>
     </>
   );

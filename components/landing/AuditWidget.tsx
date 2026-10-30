@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Search, ArrowR } from "@/components/ui/Icons";
-import ScoreCircle from "@/components/ui/ScoreCircle";
+import { AnimatePresence, LayoutGroup, useReducedMotion, type Variants } from "motion/react";
+import * as m from "motion/react-m";
+import { Search, ArrowR, Alert } from "@/components/ui/Icons";
 import WarningBadge from "@/components/ui/WarningBadge";
+import Disclosure from "@/components/ui/Disclosure";
+import AuditScore from "@/components/landing/AuditScore";
+import MotionScope from "@/components/motion/MotionScope";
 import { APIFY_ACTOR_URL, SITE_URL } from "@/lib/site";
+import { EXIT, FADE, SPRING, enterExit, stagger } from "@/lib/motion";
 
 type Issue = {
   code: string;
@@ -38,12 +43,29 @@ export default function AuditWidget() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  const [run, setRun] = useState(0);
+  const [errorSeq, setErrorSeq] = useState(0);
   const resultRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const reduce = useReducedMotion();
+  const blur = (px: number) => (reduce ? "blur(0px)" : `blur(${px}px)`);
+  const fx = enterExit(reduce);
+  const panel: Variants = {
+    hidden: { opacity: 0 },
+    shown: { opacity: 1, transition: { ...FADE, staggerChildren: 0.1 } },
+    exit: { opacity: 0, filter: blur(4), transition: EXIT },
+  };
+  const rows = stagger(0.05);
 
   useEffect(() => {
-    if (result) resultRef.current?.focus({ preventScroll: false });
-  }, [result]);
+    const el = resultRef.current;
+    if (!result || !el) return;
+    el.focus({ preventScroll: true });
+    const top = el.getBoundingClientRect().top;
+    if (top < 80 || top > window.innerHeight * 0.75) {
+      el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    }
+  }, [result, reduce]);
 
   useEffect(() => {
     if (error) inputRef.current?.focus();
@@ -72,12 +94,15 @@ export default function AuditWidget() {
       if (!res.ok || !data) {
         setResult(null);
         setError(data?.error?.message ?? "The audit service did not answer. Try again in a minute.");
+        setErrorSeq((n) => n + 1);
       } else {
         setResult(data as Result);
+        setRun((n) => n + 1);
       }
     } catch {
       setResult(null);
       setError("The audit service did not answer. Try again in a minute.");
+      setErrorSeq((n) => n + 1);
     } finally {
       setLoading(false);
     }
@@ -88,215 +113,305 @@ export default function AuditWidget() {
   const symptoms = (result?.issues ?? []).filter((i) => i.caused_by);
   const fixes = (result?.recommendations ?? []).filter((r) => r.code !== `fix.${gate?.code}`).slice(0, 3);
 
+  const phase = result ? `result-${run}` : loading ? "loading" : error ? "error" : "idle";
+
   return (
-    <div id="try" className="audit-card">
-      <div className="audit-card-head">
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--teal)" }} />
-        <span className="mono" style={{ fontSize: 12, color: "var(--ink-500)" }}>
-          Free page audit
-        </span>
-        <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--ink-500)" }}>
-          No sign-up
-        </span>
-      </div>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          audit(url);
-        }}
-        className="audit-form"
-      >
-        <label className="audit-input">
-          <Search size={16} color="var(--ink-400)" />
-          <span className="sr-only">Page address</span>
-          <input
-            ref={inputRef}
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            className="mono"
-            name="url"
-            inputMode="url"
-            autoComplete="url"
-            autoCapitalize="none"
-            autoCorrect="off"
-            spellCheck={false}
-            placeholder="yourproduct.com"
-            aria-invalid={error ? true : undefined}
-            aria-describedby={error ? "audit-error" : undefined}
-            required
-          />
-        </label>
-        <button type="submit" aria-disabled={loading} className="btn-teal audit-btn">
-          {loading ? "Auditing…" : "Audit"}
-        </button>
-      </form>
-
-      <p className="sr-only" aria-live="polite">
-        {loading
-          ? "Auditing the page."
-          : result
-            ? `Audit done. Score ${result.score.overall.toFixed(1)}, grade ${result.score.grade}, ${result.issues.length} ${result.issues.length === 1 ? "issue" : "issues"}.`
-            : ""}
-      </p>
-
-      <div id="audit-error" role="alert">
-        {error && <p style={{ margin: "14px 4px 0", fontSize: 13.5, color: "#991b1b" }}>{error}</p>}
-      </div>
-
-      {!result && (
-        <p className="audit-demo">
-          Built with React, Vue or Vite?{" "}
-          <button
-            type="button"
-            className="audit-demo-btn"
-            aria-disabled={loading}
-            onClick={() => {
-              if (loading) return;
-              setUrl(DEMO_SHELL_URL);
-              audit(DEMO_SHELL_URL);
-            }}
-          >
-            See what a crawler gets from a JavaScript-only page
-          </button>
-        </p>
-      )}
-
-      {!result && !error && (
-        <p style={{ margin: "14px 4px 0", fontSize: 13, color: "var(--ink-500)" }}>
-          Takes a few seconds. Checks the HTML a crawler receives: indexability, title and
-          description, headings, links, images, social previews, structured data and SaaS
-          conversion signals.
-        </p>
-      )}
-
-      {result && (
-        <div
-          ref={resultRef}
-          tabIndex={-1}
-          aria-busy={loading}
-          className="audit-result"
-          style={{ opacity: loading ? 0.45 : 1 }}
-        >
-          <div className="audit-scores">
-            <ScoreCircle score={Math.round(result.score.overall * 10) / 10} size={112} />
-            <div style={{ fontSize: 13, color: "var(--ink-600)", textAlign: "center" }}>
-              SEO grade <strong>{result.score.grade}</strong>
-              {result.saas_score?.overall == null && result.saas_score?.note && (
-                <>
-                  <br />
-                  <span style={{ fontSize: 12, color: "var(--ink-500)" }}>SaaS score not scored</span>
-                </>
-              )}
-              {result.saas_score?.overall != null && (
-                <>
-                  <br />
-                  <span title="Whether the page gives a visitor a reason to sign up: value proposition, call to action, proof, pricing">
-                    SaaS score <strong>{Math.round(result.saas_score.overall)}</strong>
-                  </span>
-                </>
-              )}
-            </div>
-          </div>
-          <div style={{ minWidth: 0 }}>
-            <h2 className="audit-result-title">{result.title || result.url}</h2>
-            <div className="mono audit-result-url">
-              {result.url} · HTTP {result.status_code ?? "?"} · {result.issues.length}{" "}
-              {result.issues.length === 1 ? "issue" : "issues"} · {(result.duration_ms / 1000).toFixed(1)} s
-            </div>
-
-            {gate && (
-              <div className="audit-gate" role="note">
-                <strong>{gate.title}.</strong> {gate.recommendation}
-                {gate.evidence && <span className="mono audit-meta">{gate.evidence}</span>}
-              </div>
-            )}
-
-            {result.issues.length === 0 ? (
-              <WarningBadge tone="green">No issues found</WarningBadge>
-            ) : (
-              <>
-                <ul className="audit-issues">
-                  {main.slice(0, OPEN_ISSUES).map((i) => (
-                    <IssueRow key={i.code} issue={i} />
-                  ))}
-                </ul>
-                {main.length > OPEN_ISSUES && (
-                  <details className="audit-more">
-                    <summary>Show {main.length - OPEN_ISSUES} more</summary>
-                    <ul className="audit-issues">
-                      {main.slice(OPEN_ISSUES).map((i) => (
-                        <IssueRow key={i.code} issue={i} />
-                      ))}
-                    </ul>
-                  </details>
-                )}
-                {symptoms.length > 0 && (
-                  <details className="audit-more">
-                    <summary>
-                      {symptoms.length} more {symptoms.length === 1 ? "issue comes" : "issues come"} from the
-                      empty HTML
-                    </summary>
-                    <p className="audit-issue-fix" style={{ margin: "0 0 10px" }}>
-                      These are what a crawler sees because the content is rendered by JavaScript. Server
-                      rendering fixes them together.
-                    </p>
-                    <ul className="audit-issues">
-                      {symptoms.map((i) => (
-                        <IssueRow key={i.code} issue={i} />
-                      ))}
-                    </ul>
-                  </details>
-                )}
-              </>
-            )}
-
-            {fixes.length > 0 && (
-              <>
-                <h3 className="audit-sub">{gate ? "Then fix" : "Fix first"}</h3>
-                <ol className="audit-fixes">
-                  {fixes.map((r) => (
-                    <li key={r.code}>
-                      <strong>{r.title}.</strong> {r.action}
-                      <span className="mono audit-meta">
-                        impact {r.impact} · effort {r.effort}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </>
-            )}
-
-            <div className="audit-next">
-              <p>
-                This checked one page. To audit every page of the site, run the Apify actor:
-                $0.02 a page, and Apify&apos;s free plan includes $5 of usage a month.
-              </p>
-              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
-                <a href={APIFY_ACTOR_URL} target="_blank" rel="noopener" className="btn-teal btn-sm">
-                  Audit the whole site <ArrowR size={13} />
-                </a>
-                <a href="/docs#score" className="link-quiet">
-                  How the score works
-                </a>
-              </div>
-            </div>
-          </div>
+    <MotionScope>
+      <div id="try" className="audit-card">
+        <div className="audit-card-head">
+          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--teal)" }} />
+          <span className="mono" style={{ fontSize: 12, color: "var(--ink-500)" }}>
+            Free page audit
+          </span>
+          <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--ink-500)" }}>
+            No sign-up
+          </span>
         </div>
-      )}
-    </div>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            audit(url);
+          }}
+          className="audit-form"
+        >
+          <label className="audit-input">
+            <Search size={16} color="var(--ink-400)" />
+            <span className="sr-only">Page address</span>
+            <input
+              ref={inputRef}
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="mono"
+              name="url"
+              inputMode="url"
+              autoComplete="url"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              placeholder="yourproduct.com"
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error ? "audit-error" : undefined}
+              required
+            />
+          </label>
+          <button type="submit" aria-disabled={loading} className="btn-teal audit-btn">
+            <span className="text-swap">
+              <span data-off={loading || undefined} aria-hidden={loading || undefined}>
+                Audit
+              </span>
+              <span data-off={!loading || undefined} aria-hidden={!loading || undefined}>
+                Auditing…
+              </span>
+            </span>
+          </button>
+        </form>
+
+        <p className="sr-only" aria-live="polite">
+          {loading
+            ? "Auditing the page."
+            : result
+              ? `Audit done. Score ${result.score.overall.toFixed(1)}, grade ${result.score.grade}, ${result.issues.length} ${result.issues.length === 1 ? "issue" : "issues"}.`
+              : ""}
+        </p>
+
+        <LayoutGroup>
+          <div id="audit-error" role="alert">
+            <AnimatePresence initial={false} mode="popLayout">
+              {error && (
+                <m.p
+                  key={errorSeq}
+                  className="audit-error"
+                  initial={{ opacity: 0, y: -8, filter: blur(4) }}
+                  animate={{ opacity: 1, y: 0, filter: blur(0) }}
+                  exit={{ opacity: 0, y: -4, filter: blur(4), transition: EXIT }}
+                >
+                  <Alert size={15} />
+                  <span>{error}</span>
+                </m.p>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <AnimatePresence initial={false} mode="popLayout">
+            {!result && (
+              <m.p key="demo" layout="position" className="audit-demo" exit={{ opacity: 0, filter: blur(4), transition: EXIT }}>
+                Built with React, Vue or Vite?{" "}
+                <button
+                  type="button"
+                  className="audit-demo-btn"
+                  aria-disabled={loading}
+                  onClick={() => {
+                    if (loading) return;
+                    setUrl(DEMO_SHELL_URL);
+                    audit(DEMO_SHELL_URL);
+                  }}
+                >
+                  See what a crawler gets from a JavaScript-only page
+                </button>
+              </m.p>
+            )}
+          </AnimatePresence>
+
+          <m.div layout="position" className="audit-stage">
+            <AnimatePresence initial={false} mode="popLayout">
+              {phase === "idle" && (
+                <m.p
+                  key="idle"
+                  variants={fx}
+                  initial="hidden"
+                  animate="shown"
+                  exit="exit"
+                  style={{ margin: "14px 4px 0", fontSize: 13, color: "var(--ink-500)" }}
+                >
+                  Takes a few seconds. Checks the HTML a crawler receives: indexability, title and
+                  description, headings, links, images, social previews, structured data and SaaS
+                  conversion signals.
+                </m.p>
+              )}
+
+              {phase === "loading" && <AuditSkeleton key="loading" variants={fx} />}
+
+              {result && (
+                <m.div key={phase} variants={panel} initial="hidden" animate="shown" exit="exit">
+                  <div ref={resultRef} tabIndex={-1} aria-busy={loading} className="audit-result">
+                    <m.div className="audit-scores" variants={fx}>
+                      <AuditScore score={Math.round(result.score.overall * 10) / 10} />
+                      <div style={{ fontSize: 13, color: "var(--ink-600)", textAlign: "center" }}>
+                        SEO grade{" "}
+                        <m.strong
+                          style={{ display: "inline-block" }}
+                          initial={{ opacity: 0, scale: 1.6, filter: blur(4) }}
+                          animate={{ opacity: 1, scale: 1, filter: blur(0) }}
+                          transition={{ ...SPRING, delay: 0.85 }}
+                        >
+                          {result.score.grade}
+                        </m.strong>
+                        {result.saas_score?.overall == null && result.saas_score?.note && (
+                          <>
+                            <br />
+                            <span style={{ fontSize: 12, color: "var(--ink-500)" }}>SaaS score not scored</span>
+                          </>
+                        )}
+                        {result.saas_score?.overall != null && (
+                          <>
+                            <br />
+                            <span title="Whether the page gives a visitor a reason to sign up: value proposition, call to action, proof, pricing">
+                              SaaS score <strong>{Math.round(result.saas_score.overall)}</strong>
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </m.div>
+                    <div style={{ minWidth: 0 }}>
+                      <m.div variants={fx}>
+                        <h2 className="audit-result-title">{result.title || result.url}</h2>
+                        <div className="mono audit-result-url">
+                          {result.url} · HTTP {result.status_code ?? "?"} · {result.issues.length}{" "}
+                          {result.issues.length === 1 ? "issue" : "issues"} · {(result.duration_ms / 1000).toFixed(1)} s
+                        </div>
+                      </m.div>
+
+                      {gate && (
+                        <m.div variants={fx} className="audit-gate" role="note">
+                          <strong>{gate.title}.</strong> {gate.recommendation}
+                          {gate.evidence && <span className="mono audit-meta">{gate.evidence}</span>}
+                        </m.div>
+                      )}
+
+                      {result.issues.length === 0 ? (
+                        <m.div variants={fx}>
+                          <WarningBadge tone="green">No issues found</WarningBadge>
+                        </m.div>
+                      ) : (
+                        <>
+                          <m.ul className="audit-issues" variants={rows}>
+                            {main.slice(0, OPEN_ISSUES).map((i) => (
+                              <IssueRow key={i.code} issue={i} variants={fx} />
+                            ))}
+                          </m.ul>
+                          {(main.length > OPEN_ISSUES || symptoms.length > 0) && (
+                            <m.div variants={fx} layout="position">
+                              {main.length > OPEN_ISSUES && (
+                                <Disclosure className="audit-more" summary={`Show ${main.length - OPEN_ISSUES} more`}>
+                                  <m.ul className="audit-issues" variants={rows} initial="hidden" animate="shown">
+                                    {main.slice(OPEN_ISSUES).map((i) => (
+                                      <IssueRow key={i.code} issue={i} variants={fx} />
+                                    ))}
+                                  </m.ul>
+                                </Disclosure>
+                              )}
+                              {symptoms.length > 0 && (
+                                <Disclosure
+                                  className="audit-more"
+                                  summary={`${symptoms.length} more ${symptoms.length === 1 ? "issue comes" : "issues come"} from the empty HTML`}
+                                >
+                                  <p className="audit-issue-fix" style={{ margin: "0 0 10px" }}>
+                                    These are what a crawler sees because the content is rendered by JavaScript. Server
+                                    rendering fixes them together.
+                                  </p>
+                                  <m.ul className="audit-issues" variants={rows} initial="hidden" animate="shown">
+                                    {symptoms.map((i) => (
+                                      <IssueRow key={i.code} issue={i} variants={fx} />
+                                    ))}
+                                  </m.ul>
+                                </Disclosure>
+                              )}
+                            </m.div>
+                          )}
+                        </>
+                      )}
+
+                      {fixes.length > 0 && (
+                        <m.div variants={fx} layout="position">
+                          <h3 className="audit-sub">{gate ? "Then fix" : "Fix first"}</h3>
+                          <ol className="audit-fixes">
+                            {fixes.map((r) => (
+                              <li key={r.code}>
+                                <strong>{r.title}.</strong> {r.action}
+                                <span className="mono audit-meta">
+                                  impact {r.impact} · effort {r.effort}
+                                </span>
+                              </li>
+                            ))}
+                          </ol>
+                        </m.div>
+                      )}
+
+                      <m.div variants={fx} layout="position" className="audit-next">
+                        <p>
+                          This checked one page. To audit every page of the site, run the Apify actor:
+                          $0.02 a page, and Apify&apos;s free plan includes $5 of usage a month.
+                        </p>
+                        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
+                          <a href={APIFY_ACTOR_URL} target="_blank" rel="noopener" className="btn-teal btn-sm">
+                            Audit the whole site <ArrowR size={13} />
+                          </a>
+                          <a href="/docs#score" className="link-quiet">
+                            How the score works
+                          </a>
+                        </div>
+                      </m.div>
+                    </div>
+                  </div>
+                </m.div>
+              )}
+            </AnimatePresence>
+          </m.div>
+        </LayoutGroup>
+      </div>
+    </MotionScope>
   );
 }
 
-function IssueRow({ issue }: { issue: Issue }) {
+function AuditSkeleton({ variants, ref }: { variants: Variants; ref?: React.Ref<HTMLDivElement> }) {
   return (
-    <li>
+    <m.div ref={ref} variants={variants} initial="hidden" animate="shown" exit="exit" aria-hidden="true">
+      <div className="audit-result audit-skeleton">
+        <div className="audit-scores">
+          <svg className="skel-ring" width="112" height="112" viewBox="0 0 112 112">
+            <circle cx="56" cy="56" r="51" fill="none" stroke="var(--ink-100)" strokeWidth="10" />
+            <circle
+              className="skel-arc"
+              cx="56"
+              cy="56"
+              r="51"
+              fill="none"
+              stroke="var(--teal-500)"
+              strokeWidth="10"
+              strokeLinecap="round"
+              strokeDasharray="80 241"
+            />
+          </svg>
+          <span className="skel-line" style={{ width: 84 }} />
+        </div>
+        <div style={{ minWidth: 0 }}>
+          <span className="skel-line" style={{ width: "58%", height: 14 }} />
+          <span className="skel-line" style={{ width: "40%", marginTop: 8 }} />
+          <div className="skel-rows">
+            {[72, 88, 64].map((w) => (
+              <div key={w} className="skel-row">
+                <span className="skel-pill" />
+                <span className="skel-line" style={{ width: `${w}%` }} />
+              </div>
+            ))}
+          </div>
+          <p className="mono audit-skel-note">Fetching the HTML a crawler gets…</p>
+        </div>
+      </div>
+    </m.div>
+  );
+}
+
+function IssueRow({ issue, variants }: { issue: Issue; variants: Variants }) {
+  return (
+    <m.li variants={variants}>
       <WarningBadge tone={tone(issue.severity)}>{issue.severity}</WarningBadge>
       <div>
         <div className="audit-issue-title">{issue.title}</div>
         <div className="audit-issue-fix">{issue.recommendation}</div>
         {issue.evidence && <div className="mono audit-meta">{issue.evidence}</div>}
       </div>
-    </li>
+    </m.li>
   );
 }

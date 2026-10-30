@@ -1,5 +1,6 @@
 import { Check } from "@/components/ui/Icons";
 import { APIFY_ACTOR_URL } from "@/lib/site";
+import Reveal from "@/components/motion/Reveal";
 
 type Tier = {
   name: string;
@@ -55,15 +56,15 @@ export default function Pricing() {
   return (
     <section id="pricing" className="section">
       <div className="container" style={{ maxWidth: 860 }}>
-        <div style={{ marginBottom: 40, textAlign: "center" }}>
+        <Reveal style={{ marginBottom: 40, textAlign: "center" }}>
           <div className="mono eyebrow">Pricing</div>
           <h2 className="section-title">Free for one page. Cents for a whole site.</h2>
           <p className="section-sub">Pages that fail to load are not charged.</p>
-        </div>
+        </Reveal>
 
         <div className="grid-2">
-          {tiers.map((t) => (
-            <div key={t.name} className={t.accent ? "tier tier-accent" : "tier"}>
+          {tiers.map((t, i) => (
+            <Reveal key={t.name} className={t.accent ? "tier tier-accent" : "tier"} delay={i * 0.1}>
               <h3 className="tier-name">{t.name}</h3>
               <div style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 44, fontWeight: 700, letterSpacing: -1 }}>{t.price}</span>
@@ -90,7 +91,7 @@ export default function Pricing() {
               >
                 {t.cta}
               </a>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
