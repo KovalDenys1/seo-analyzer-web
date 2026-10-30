@@ -35,9 +35,13 @@ const jsonLd = {
         {
           "@type": "Offer",
           name: "Page audit on Apify",
-          price: "0.02",
-          priceCurrency: "USD",
           url: APIFY_ACTOR_URL,
+          priceSpecification: {
+            "@type": "UnitPriceSpecification",
+            price: 0.02,
+            priceCurrency: "USD",
+            unitText: "page",
+          },
         },
       ],
     },

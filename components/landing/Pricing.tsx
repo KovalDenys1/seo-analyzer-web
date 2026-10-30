@@ -64,7 +64,7 @@ export default function Pricing() {
         <div className="grid-2">
           {tiers.map((t) => (
             <div key={t.name} className={t.accent ? "tier tier-accent" : "tier"}>
-              <div className="tier-name">{t.name}</div>
+              <h3 className="tier-name">{t.name}</h3>
               <div style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 44, fontWeight: 700, letterSpacing: -1 }}>{t.price}</span>
                 <span className="tier-muted" style={{ fontSize: 14 }}>

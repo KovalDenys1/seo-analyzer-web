@@ -15,7 +15,7 @@ const Icon = ({
   children?: React.ReactNode;
   vb?: number;
 }) => (
-  <svg
+  <svg aria-hidden="true" focusable="false"
     xmlns="http://www.w3.org/2000/svg"
     width={size}
     height={size}
@@ -31,7 +31,7 @@ const Icon = ({
 );
 
 export const Logo = ({ size = 22, color = "#0f766e" }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+  <svg aria-hidden="true" focusable="false" width={size} height={size} viewBox="0 0 24 24" fill="none">
     <path
       d="M12 2.5 L21 7 V17 L12 21.5 L3 17 V7 Z"
       stroke={color}
@@ -135,7 +135,7 @@ export const Doc = (p: IconProps) => (
 export const Down = (p: IconProps) => <Icon {...p} d="M6 9l6 6 6-6" />;
 export const Down2 = (p: IconProps) => <Icon {...p} d="M8 10l4 4 4-4" />;
 export const Lightning = ({ size = 16, color = "currentColor" }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+  <svg aria-hidden="true" focusable="false" width={size} height={size} viewBox="0 0 24 24" fill={color}>
     <path d="M13 3 4 14h6l-1 7 9-11h-6z" />
   </svg>
 );
@@ -170,7 +170,7 @@ export const Alert = (p: IconProps) => (
   </Icon>
 );
 export const Google = ({ size = 18 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24">
+  <svg aria-hidden="true" focusable="false" width={size} height={size} viewBox="0 0 24 24">
     <path d="M22 12.2c0-.8-.1-1.5-.2-2.2H12v4.2h5.6a4.8 4.8 0 0 1-2.1 3.1v2.6h3.4c2-1.8 3.1-4.5 3.1-7.7z" fill="#4285F4" />
     <path d="M12 22c2.8 0 5.2-1 7-2.5l-3.4-2.6c-1 .6-2.2 1-3.6 1-2.8 0-5.1-1.9-5.9-4.4H2.5v2.7A10 10 0 0 0 12 22z" fill="#34A853" />
     <path d="M6.1 13.5a6 6 0 0 1 0-3.8V7H2.5a10 10 0 0 0 0 9l3.6-2.5z" fill="#FBBC04" />
@@ -179,7 +179,7 @@ export const Google = ({ size = 18 }: { size?: number }) => (
 );
 
 export const Github = ({ size = 18, color = "currentColor" }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+  <svg aria-hidden="true" focusable="false" width={size} height={size} viewBox="0 0 24 24" fill={color}>
     <path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7 1 .7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0 0 12 2z" />
   </svg>
 );

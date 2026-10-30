@@ -61,9 +61,9 @@ export default function Features() {
               <div className="card-icon">
                 <card.icon size={18} color="var(--teal)" />
               </div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: "var(--ink-900)", marginBottom: 6 }}>
+              <h3 style={{ margin: "0 0 6px", fontSize: 16, fontWeight: 600, color: "var(--ink-900)" }}>
                 {card.title}
-              </div>
+              </h3>
               <p style={{ margin: 0, fontSize: 13.5, color: "var(--ink-500)", lineHeight: 1.55 }}>
                 {card.desc}
               </p>

@@ -206,7 +206,7 @@ h1, h2, h3 { font-optical-sizing: auto; text-wrap: balance; }
   box-shadow: var(--shadow-sm); display: flex; flex-direction: column;
 }
 .tier-accent { background: var(--ink-900); color: #fff; border-color: var(--ink-900); box-shadow: 0 24px 60px rgba(13,148,136,.18); }
-.tier-name { font-size: 14px; font-weight: 600; color: var(--ink-500); }
+.tier-name { margin: 0; font-size: 14px; font-weight: 600; color: var(--ink-500); }
 .tier-accent .tier-name, .tier-accent .tier-muted { color: #9ca3af; }
 .tier-muted { color: var(--ink-500); }
 .tier-limit {
@@ -239,8 +239,8 @@ h1, h2, h3 { font-optical-sizing: auto; text-wrap: balance; }
 
 .footer { padding: 40px 56px; border-top: 1px solid var(--ink-100); background: #fff; }
 .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
-.footer-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; font-size: 13px; }
-.footer-links a { color: var(--ink-600); text-decoration: none; display: inline-flex; align-items: center; }
+.footer-links { display: flex; gap: 0 20px; flex-wrap: wrap; align-items: center; font-size: 13px; }
+.footer-links a { color: var(--ink-600); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
 .footer-links a:hover { color: var(--ink-900); }
 
 .text-page { flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 64px 24px 88px; color: var(--ink-700); line-height: 1.65; font-size: 15.5px; }

@@ -11,7 +11,7 @@ const perks = [
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="auth-shell">
-      <div className="auth-form-col">
+      <main className="auth-form-col">
         <Link href="/" className="brand" aria-label={`${SITE_NAME} home`}>
           <Logo size={22} />
           <span style={{ fontWeight: 700, letterSpacing: -0.2 }}>
@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <Link href="/privacy" className="link-quiet">Privacy</Link>
           <Link href="/terms" className="link-quiet">Terms</Link>
         </div>
-      </div>
+      </main>
 
       <div className="auth-brand-col">
         <div aria-hidden className="auth-brand-bg" />
