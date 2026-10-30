@@ -91,7 +91,7 @@ export default function AuditWidget() {
         <span className="mono" style={{ fontSize: 12, color: "var(--ink-500)" }}>
           Free page audit
         </span>
-        <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--ink-400)" }}>
+        <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--ink-500)" }}>
           No sign-up
         </span>
       </div>

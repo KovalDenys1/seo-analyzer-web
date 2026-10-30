@@ -170,7 +170,7 @@ export default async function UsagePage() {
             })}
           </div>
 
-          <div className="mono" style={{ marginTop: 8, display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--ink-400)" }}>
+          <div className="mono" style={{ marginTop: 8, display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--ink-500)" }}>
             {labelIdxs.map((idx) => <span key={idx}>{formatLabel(days[idx])}</span>)}
           </div>
         </div>
@@ -181,7 +181,7 @@ export default async function UsagePage() {
         <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>By endpoint</div>
         <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, overflow: "hidden" }}>
           {endpoints.length === 0 ? (
-            <div style={{ padding: 32, textAlign: "center", fontSize: 13.5, color: "var(--ink-400)" }}>
+            <div style={{ padding: 32, textAlign: "center", fontSize: 13.5, color: "var(--ink-500)" }}>
               No requests this month yet.
             </div>
           ) : (

@@ -21,7 +21,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         <div className="auth-form-slot">{children}</div>
 
-        <div style={{ fontSize: 12, color: "var(--ink-400)", display: "flex", gap: 16, flexWrap: "wrap" }}>
+        <div style={{ fontSize: 12, color: "var(--ink-500)", display: "flex", gap: 16, flexWrap: "wrap" }}>
           <span>© 2026 {SITE_NAME}</span>
           <Link href="/privacy" className="link-quiet">Privacy</Link>
           <Link href="/terms" className="link-quiet">Terms</Link>

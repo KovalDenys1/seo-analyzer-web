@@ -127,8 +127,8 @@ export default async function OverviewPage() {
             fontSize: 14, color: "var(--ink-800)", letterSpacing: 0.4,
           }}>
             {activeKey
-              ? <>{activeKey.key_prefix}<span style={{ color: "var(--ink-400)" }}>••••••••••••••••••••••••</span></>
-              : <span style={{ color: "var(--ink-400)" }}>No key yet — <Link href="/dashboard/api-key" style={{ color: "var(--teal)" }}>generate one</Link></span>
+              ? <>{activeKey.key_prefix}<span style={{ color: "var(--ink-500)" }}>••••••••••••••••••••••••</span></>
+              : <span style={{ color: "var(--ink-500)" }}>No key yet — <Link href="/dashboard/api-key" style={{ color: "var(--teal)" }}>generate one</Link></span>
             }
           </div>
         </div>
@@ -139,7 +139,7 @@ export default async function OverviewPage() {
         <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Recent requests</div>
         <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, overflow: "hidden" }}>
           {recentRows.length === 0 ? (
-            <div style={{ padding: 32, textAlign: "center", fontSize: 13.5, color: "var(--ink-400)" }}>
+            <div style={{ padding: 32, textAlign: "center", fontSize: 13.5, color: "var(--ink-500)" }}>
               No requests yet.{" "}
               <Link href="/dashboard/api-key" style={{ color: "var(--teal)" }}>
                 Create a key
@@ -153,7 +153,7 @@ export default async function OverviewPage() {
               rows={recentRows.map((r) => [
                 <span key="url" className="mono" style={{ color: "var(--ink-700)", fontSize: 12 }}>{r.url}</span>,
                 <span key="ep" className="mono" style={{ fontSize: 12, color: "var(--ink-500)", padding: "2px 8px", background: "var(--ink-100)", borderRadius: 4 }}>{r.ep}</span>,
-                r.score === null ? <span key="score" style={{ color: "var(--ink-400)" }}>—</span> : <ScorePill key="score" score={r.score} />,
+                r.score === null ? <span key="score" style={{ color: "var(--ink-500)" }}>—</span> : <ScorePill key="score" score={r.score} />,
                 <span key="time" style={{ color: "var(--ink-500)" }}>{r.t}</span>,
                 r.ok ? <Pill key="status" tone="green">200 OK</Pill> : <Pill key="status" tone="red">error</Pill>,
               ])}

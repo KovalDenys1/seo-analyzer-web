@@ -122,7 +122,7 @@ export default function ApiKeyPage() {
         )}
 
         {loading ? (
-          <div style={{ padding: 24, color: "var(--ink-400)", fontSize: 14 }}>Loading...</div>
+          <div style={{ padding: 24, color: "var(--ink-500)", fontSize: 14 }}>Loading...</div>
         ) : activeKey ? (
           <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, padding: 24 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
@@ -163,7 +163,7 @@ export default function ApiKeyPage() {
             </div>
 
             {!revealedKey && (
-              <div style={{ marginTop: 10, fontSize: 12.5, color: "var(--ink-400)" }}>
+              <div style={{ marginTop: 10, fontSize: 12.5, color: "var(--ink-500)" }}>
                 Full key is only visible once after generation. Use <strong>Regenerate</strong> to get a new one.
               </div>
             )}

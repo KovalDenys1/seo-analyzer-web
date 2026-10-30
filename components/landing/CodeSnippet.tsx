@@ -43,7 +43,7 @@ export default function CodeSnippet() {
                 />
               ))}
             </div>
-            <span className="mono" style={{ fontSize: 11, color: "#6b7280" }}>
+            <span className="mono" style={{ fontSize: 11, color: "#9ca3af" }}>
               terminal
             </span>
             <span />

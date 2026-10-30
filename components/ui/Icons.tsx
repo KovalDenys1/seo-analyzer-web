@@ -30,7 +30,7 @@ const Icon = ({
   </svg>
 );
 
-export const Logo = ({ size = 22, color = "#0D9488" }: IconProps) => (
+export const Logo = ({ size = 22, color = "#0f766e" }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     <path
       d="M12 2.5 L21 7 V17 L12 21.5 L3 17 V7 Z"

@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Sign in" };
 
 const clerkAppearance = {
   variables: {
-    colorPrimary: "#0D9488",
+    colorPrimary: "#0f766e",
     colorText: "#0b1220",
     colorTextSecondary: "#6b7280",
     colorBackground: "#ffffff",
@@ -27,14 +27,14 @@ const clerkAppearance = {
       height: "44px", fontSize: "14px", fontWeight: "500",
     },
     formButtonPrimary: {
-      backgroundColor: "#0D9488", borderRadius: "10px",
+      backgroundColor: "#0f766e", borderRadius: "10px",
       height: "44px", fontSize: "14px", fontWeight: "600",
     },
     formFieldInput: {
       height: "42px", border: "1px solid #e5e7eb",
       borderRadius: "10px", fontSize: "14px",
     },
-    footerActionLink: { color: "#0D9488", fontWeight: "600" },
+    footerActionLink: { color: "#0f766e", fontWeight: "600" },
   },
 } as const;
 
