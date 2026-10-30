@@ -16,6 +16,7 @@ export default function Footer() {
 
         <nav className="footer-links">
           <Link href="/docs">Docs</Link>
+          <Link href="/guides">Guides</Link>
           <Link href="/#pricing">Pricing</Link>
           <a href={APIFY_ACTOR_URL} target="_blank" rel="noopener">
             Apify

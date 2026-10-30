@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Tag, Heading, Link as LinkIcon, Image as ImageIcon, Key, Speed } from "@/components/ui/Icons";
 import type { ComponentType } from "react";
 
@@ -72,7 +73,12 @@ export default function Features() {
 
         <p style={{ marginTop: 28, fontSize: 13, color: "var(--ink-500)", lineHeight: 1.6 }}>
           What it does not do: it reads the HTML a crawler receives and does not run JavaScript, it
-          has no keyword or backlink database, and it does not measure Core Web Vitals.
+          has no keyword or backlink database, and it does not measure Core Web Vitals. Why reading
+          the raw HTML matters for React and Vite sites:{" "}
+          <Link href="/guides/why-google-sees-an-empty-page" className="link-teal">
+            why Google sees an empty page
+          </Link>
+          .
         </p>
       </div>
     </section>
