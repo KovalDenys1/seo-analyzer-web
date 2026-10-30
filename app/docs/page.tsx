@@ -164,8 +164,10 @@ export default function DocsPage() {
         <li>It does not measure Core Web Vitals. Timing covers the HTML response only.</li>
         <li>
           A page that cannot be fetched (DNS failure, timeout, not HTML) comes back as an error item
-          and is not charged. A page that answers with a block screen or a login form is audited as
-          served and charged like any other page, so check the HTTP status in the report.
+          and is not charged, and so does a bot-protection challenge (Cloudflare, DataDome, AWS WAF,
+          PerimeterX), with the code <code>blocked_by_bot_protection</code>. A page that loads but
+          returns 4xx or 5xx, or shows a login form, is audited as served and charged, so check the
+          HTTP status in the report.
         </li>
       </ul>
 
