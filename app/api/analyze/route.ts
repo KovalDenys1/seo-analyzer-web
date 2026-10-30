@@ -29,6 +29,7 @@ function unavailable(reason: string) {
 }
 
 export async function GET(req: Request) {
+  const t0 = Date.now();
   const { searchParams } = new URL(req.url);
   const rawUrl = searchParams.get("url");
   const endpoint = searchParams.get("endpoint") ?? "analyze";
@@ -107,7 +108,8 @@ export async function GET(req: Request) {
   try {
     upstream = await fetch(`${apiBase}${apiPath}?url=${encodeURIComponent(url)}`, {
       headers: process.env.SEO_API_KEY ? { "X-API-Key": process.env.SEO_API_KEY } : {},
-      signal: AbortSignal.timeout(25_000),
+      // Ends before maxDuration so after() always settles the reserved usage row.
+      signal: AbortSignal.timeout(Math.max(1_000, 27_000 - (Date.now() - t0))),
       cache: "no-store",
     });
     result = await upstream.json();
