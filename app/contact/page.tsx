@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import TextPage from "@/components/landing/TextPage";
-import { APIFY_ISSUES_URL, GITHUB_ISSUES_URL } from "@/lib/site";
+import { APIFY_ISSUES_URL, CONTACT_EMAIL, GITHUB_ISSUES_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -11,6 +11,13 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <TextPage title="Contact" lead="Questions, bug reports and feature requests are all welcome.">
+      <h2>Email</h2>
+      <p>
+        For anything you would rather not post in public – a question before you try it, a privacy
+        request, a result you want explained – write to{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. A person reads every
+        message.
+      </p>
       <h2>Using the Apify actor</h2>
       <p>
         Open an issue on the actor&rsquo;s{" "}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import TextPage from "@/components/landing/TextPage";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Privacy",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <TextPage title="Privacy" updated="29 October 2026">
+    <TextPage title="Privacy" updated="30 October 2026">
       <h2>Free audit on this site</h2>
       <p>
         When you audit a page, we fetch the public address you enter and analyse the HTML it
@@ -32,13 +33,16 @@ export default function PrivacyPage() {
       </p>
       <h2>Service providers</h2>
       <p>
-        The site is hosted on Vercel, the analyzer on Render and account data on Supabase. Each
-        keeps standard request logs. We do not sell or share your data with anyone else.
+        The site is hosted on Vercel. The analyzer and the account database run on Oracle Cloud in
+        Stockholm, Sweden. Sign-in is handled by Clerk. Each keeps standard request logs. We do not
+        sell or share your data with anyone else.
       </p>
       <h2>Your choices</h2>
       <p>
         You can delete your API keys from the dashboard at any time. To have your account and usage
-        log deleted, ask through the contact page and we will remove them within 30 days.
+        log deleted, or for any other privacy question, email{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we will act on it within 30
+        days.
       </p>
     </TextPage>
   );
