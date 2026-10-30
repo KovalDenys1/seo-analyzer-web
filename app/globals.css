@@ -186,7 +186,8 @@ h1, h2, h3 { font-optical-sizing: auto; text-wrap: balance; }
   padding: 0; border: 0; background: none; font: inherit; color: var(--teal); font-weight: 600;
   text-decoration: underline; text-underline-offset: 3px; cursor: pointer; text-align: left;
 }
-.audit-demo-btn:disabled { color: var(--ink-400); cursor: default; }
+.audit-demo-btn[aria-disabled="true"] { color: var(--ink-500); cursor: default; }
+.btn-teal[aria-disabled="true"] { cursor: progress; }
 .audit-gate {
   margin: 0 0 14px; padding: 12px 14px; border-radius: 10px; background: #fef2f2; border: 1px solid #fecaca;
   color: #7f1d1d; font-size: 13.5px; line-height: 1.5;

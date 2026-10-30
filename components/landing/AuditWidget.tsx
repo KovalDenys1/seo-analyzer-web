@@ -46,6 +46,10 @@ export default function AuditWidget() {
   }, [result]);
 
   useEffect(() => {
+    if (error) inputRef.current?.focus();
+  }, [error]);
+
+  useEffect(() => {
     const focusOnTry = () => {
       if (window.location.hash === "#try") inputRef.current?.focus({ preventScroll: true });
     };
@@ -111,13 +115,19 @@ export default function AuditWidget() {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className="mono"
+            name="url"
             inputMode="url"
             autoComplete="url"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             placeholder="yourproduct.com"
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? "audit-error" : undefined}
             required
           />
         </label>
-        <button type="submit" disabled={loading} className="btn-teal audit-btn">
+        <button type="submit" aria-disabled={loading} className="btn-teal audit-btn">
           {loading ? "Auditing…" : "Audit"}
         </button>
       </form>
@@ -126,15 +136,13 @@ export default function AuditWidget() {
         {loading
           ? "Auditing the page."
           : result
-            ? `Audit done. Score ${result.score.overall.toFixed(1)}, grade ${result.score.grade}, ${result.issues.length} issues.`
+            ? `Audit done. Score ${result.score.overall.toFixed(1)}, grade ${result.score.grade}, ${result.issues.length} ${result.issues.length === 1 ? "issue" : "issues"}.`
             : ""}
       </p>
 
-      {error && (
-        <p role="alert" style={{ margin: "14px 4px 0", fontSize: 13.5, color: "#991b1b" }}>
-          {error}
-        </p>
-      )}
+      <div id="audit-error" role="alert">
+        {error && <p style={{ margin: "14px 4px 0", fontSize: 13.5, color: "#991b1b" }}>{error}</p>}
+      </div>
 
       {!result && (
         <p className="audit-demo">
@@ -142,8 +150,9 @@ export default function AuditWidget() {
           <button
             type="button"
             className="audit-demo-btn"
-            disabled={loading}
+            aria-disabled={loading}
             onClick={() => {
+              if (loading) return;
               setUrl(DEMO_SHELL_URL);
               audit(DEMO_SHELL_URL);
             }}
