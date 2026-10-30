@@ -96,6 +96,10 @@ h1, h2, h3 { font-optical-sizing: auto; text-wrap: balance; }
 .promo-video-overlay { position: absolute; inset: 0; display: grid; place-items: center; background: linear-gradient(180deg, rgba(11,18,32,0) 45%, rgba(11,18,32,.42)); }
 .promo-video-play { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px 14px 20px; border: 0; border-radius: 999px; background: var(--teal); color: #fff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow-lg); }
 .promo-video-play:focus-visible { outline: 3px solid var(--teal-100); outline-offset: 3px; }
+@media (max-width: 720px) {
+  .promo-video-overlay { place-items: end center; padding-bottom: 12px; }
+  .promo-video-play { padding: 9px 16px 9px 14px; font-size: 13.5px; gap: 8px; }
+}
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; align-items: stretch; }
 .grid-code { display: grid; grid-template-columns: 1fr 1.2fr; gap: 56px; align-items: center; }
