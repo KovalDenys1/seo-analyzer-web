@@ -50,7 +50,7 @@ const jsonLd = {
       "@type": "VideoObject",
       name: `${SITE_NAME} – what a crawler sees on your page`,
       description:
-        "A 75-second tour of SEO Audit Lab: a free audit flags a JavaScript page that crawlers see as empty, scores it and leads with the fix.",
+        "A one-minute tour of SEO Audit Lab: a free audit flags a JavaScript page that crawlers see as empty, scores it and leads with the fix.",
       thumbnailUrl: [PROMO_VIDEO.poster],
       contentUrl: PROMO_VIDEO.src,
       uploadDate: PROMO_VIDEO.uploadDate,
