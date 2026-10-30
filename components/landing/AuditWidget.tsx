@@ -42,6 +42,10 @@ export default function AuditWidget() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (result) resultRef.current?.focus({ preventScroll: false });
+  }, [result]);
+
+  useEffect(() => {
     const focusOnTry = () => {
       if (window.location.hash === "#try") inputRef.current?.focus({ preventScroll: true });
     };
@@ -66,7 +70,6 @@ export default function AuditWidget() {
         setError(data?.error?.message ?? "The audit service did not answer. Try again in a minute.");
       } else {
         setResult(data as Result);
-        requestAnimationFrame(() => resultRef.current?.focus({ preventScroll: false }));
       }
     } catch {
       setResult(null);
