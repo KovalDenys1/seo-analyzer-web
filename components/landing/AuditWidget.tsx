@@ -79,6 +79,7 @@ export default function AuditWidget() {
   const gate = result?.issues.find((i) => GATES.includes(i.code)) ?? null;
   const main = (result?.issues ?? []).filter((i) => !i.caused_by && i !== gate);
   const symptoms = (result?.issues ?? []).filter((i) => i.caused_by);
+  const fixes = (result?.recommendations ?? []).filter((r) => r.code !== `fix.${gate?.code}`).slice(0, 3);
 
   return (
     <div id="try" className="audit-card">
@@ -238,11 +239,11 @@ export default function AuditWidget() {
               </>
             )}
 
-            {result.recommendations.length > 0 && (
+            {fixes.length > 0 && (
               <>
-                <h3 className="audit-sub">Fix first</h3>
+                <h3 className="audit-sub">{gate ? "Then fix" : "Fix first"}</h3>
                 <ol className="audit-fixes">
-                  {result.recommendations.slice(0, 3).map((r) => (
+                  {fixes.map((r) => (
                     <li key={r.code}>
                       <strong>{r.title}.</strong> {r.action}
                       <span className="mono audit-meta">
