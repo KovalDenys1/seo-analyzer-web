@@ -166,7 +166,9 @@ async function audit(url: string): Promise<AuditResult> {
       caused_by: ((evidence ?? {}) as { likely_cause?: string }).likely_cause ?? null,
       evidence: summarizeEvidence(code, evidence),
     }));
+  const shown = new Set(issues.map((i) => i.code));
   const recommendations = ((data.recommendations ?? []) as Recommendation[])
+    .filter((r) => shown.has(r.code.replace(/^fix\./, "")))
     .slice(0, 5)
     .map(({ code, priority, impact, effort, title, action, why }) => ({
       code,
