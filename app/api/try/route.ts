@@ -12,7 +12,12 @@ const hits = new Map<string, number[]>();
 function clientKey(req: Request): string {
   const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim();
   if (!ip) return "unknown";
-  return ip.includes(":") ? ip.split(":").slice(0, 4).join(":") : ip;
+  if (!ip.includes(":") || ip.includes(".")) return ip;
+  const [head, tail] = ip.split("%")[0].toLowerCase().split("::");
+  const h = head ? head.split(":") : [];
+  const t = tail === undefined ? [] : tail ? tail.split(":") : [];
+  const groups = tail === undefined ? h : [...h, ...Array(8 - h.length - t.length).fill("0"), ...t];
+  return groups.slice(0, 4).map((g) => g.replace(/^0+(?=.)/, "")).join(":");
 }
 
 // Best effort only: each serverless instance keeps its own window. Returns seconds until a slot frees, or 0.
