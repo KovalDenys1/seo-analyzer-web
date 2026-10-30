@@ -65,7 +65,7 @@ Three read-only audits ran on the live site: a browser walk at 390 and 1440 px a
 | 40 | Teal text and buttons were 3.74:1, gray text 2.53:1, and the focus ring vanished on teal buttons. A failed audit dropped keyboard focus to the page top | Accessibility 94–96 on every page | **Fixed** `efc8210`, `8814ab6`, `2b56e9e` |
 | 41 | Only HSTS was sent, plus `x-powered-by` | A technical buyer's header scan | **Fixed** `d1f50b5` |
 | 42 | The product's own home page gets "No obvious product visual detected" from its own audit | The self-test does not come back clean | **Open**, next: a real report screenshot on the home page |
-| 43 | Lighthouse's headless Chrome gets about 235 KiB of extra files and an unstable 3.2 s mobile LCP; a burst of requests gets a Vercel challenge | PageSpeed scores pay for it | **Open.** Vercel Firewall settings need a sign-in (the CLI token has expired) |
+| 43 | Lighthouse's headless Chrome gets about 235 KiB of extra files and an unstable 3.2 s mobile LCP; a burst of requests gets a Vercel challenge | PageSpeed scores pay for it | **Won't fix.** Vercel's edge adds a script (94 KB, plus its own CSS and fonts) to the head of every page served to Google Chrome. It does the same on nextjs.org and vercel.com, and the project has no firewall config, attack mode or setting behind it (checked 30.10 with the CLI and API). Lighthouse performance is 90 |
 | 44 | The `-ebon.vercel.app` host: `www.` has no certificate, and Clerk production needs an owned domain | Trust | **Open, by decision.** Gate 30.11, together with 35 |
 
 ## Not gaps
