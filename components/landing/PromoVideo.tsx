@@ -19,7 +19,7 @@ export default function PromoVideo() {
         <Reveal style={{ textAlign: "center", marginBottom: 32 }}>
           <div className="mono eyebrow">See it run</div>
           <h2 id="promo-video-title" className="section-title">
-            What a crawler sees, in under a minute.
+            What a crawler sees, in 30 seconds.
           </h2>
         </Reveal>
 
