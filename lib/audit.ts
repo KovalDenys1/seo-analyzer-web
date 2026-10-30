@@ -27,6 +27,8 @@ const PLAIN_MESSAGES: Record<string, string> = {
   upstream_unreachable:
     "The site did not answer. It may be down, or it may refuse connections from our server.",
   response_too_large: "The page is larger than 3 MB, which is more than the audit reads.",
+  blocked_by_bot_protection:
+    "The site answered with a bot check (such as Cloudflare's \"Just a moment\") instead of the page, so there was nothing real to audit. If it is your site, allow the SaaSSEOAnalyzer user agent, or try a page that is not behind the check.",
   unsupported_content_type:
     "That address is not an HTML page (it may be a PDF, an image or a file). Audit a web page instead.",
 };

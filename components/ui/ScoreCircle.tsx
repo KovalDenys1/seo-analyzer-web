@@ -42,13 +42,13 @@ export default function ScoreCircle({ score, size = 120, stroke = 10, label = tr
         <div>
           <div
             style={{
-              fontSize: size * 0.32,
+              fontSize: size * (Number.isInteger(score) ? 0.32 : 0.27),
               fontWeight: 700,
               color: "var(--ink-900)",
               letterSpacing: -1,
             }}
           >
-            {score}
+            {Number.isInteger(score) ? score : score.toFixed(1)}
           </div>
           {label && (
             <div
