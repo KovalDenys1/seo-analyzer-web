@@ -17,6 +17,9 @@ export default async function UsagePage() {
   // First day of current and previous month
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   const firstOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+  const sameDayLastMonth = new Date(
+    now.getFullYear(), now.getMonth() - 1, now.getDate(), now.getHours(), now.getMinutes(),
+  ).toISOString();
 
   // Days elapsed this month (at least 1)
   const daysElapsed = Math.max(now.getDate(), 1);
@@ -30,6 +33,7 @@ export default async function UsagePage() {
   const [
     { count: thisMonth },
     { count: lastMonth },
+    { count: lastMonthToDate },
     { count: usedToday },
     { data: dailyRaw },
     { data: endpointRaw },
@@ -38,6 +42,9 @@ export default async function UsagePage() {
       .eq("user_id", user.id).gte("created_at", firstOfMonth),
     supabase.from("usage_logs").select("id", { count: "exact", head: true })
       .eq("user_id", user.id).gte("created_at", firstOfLastMonth).lt("created_at", firstOfMonth),
+    supabase.from("usage_logs").select("id", { count: "exact", head: true })
+      .eq("user_id", user.id).gte("created_at", firstOfLastMonth)
+      .lt("created_at", sameDayLastMonth < firstOfMonth ? sameDayLastMonth : firstOfMonth),
     supabase.from("usage_logs").select("id", { count: "exact", head: true })
       .eq("user_id", user.id).gte("created_at", todayStr),
     supabase.from("usage_logs").select("created_at, endpoint")
@@ -91,7 +98,8 @@ export default async function UsagePage() {
   const lm = lastMonth ?? 0;
   const avgDay = Math.round(tm / daysElapsed);
   const limit = PLAN_LIMITS[user.plan] ?? PLAN_LIMITS.free;
-  const change = lm > 0 ? Math.round(((tm - lm) / lm) * 100) : null;
+  const lmToDate = lastMonthToDate ?? 0;
+  const change = lmToDate > 0 ? Math.round(((tm - lmToDate) / lmToDate) * 100) : null;
   const quotaPct = limit > 0 ? ((usedToday ?? 0) / limit * 100).toFixed(1) : "0.0";
 
   // Date labels for x-axis (show 5 evenly spaced)
@@ -112,7 +120,7 @@ export default async function UsagePage() {
         <StatTile
           label="This month"
           value={tm.toLocaleString()}
-          delta={change === null ? undefined : `${change > 0 ? "+" : ""}${change}% vs last month`}
+          delta={change === null ? undefined : `${change > 0 ? "+" : ""}${change}% vs this point last month`}
           deltaTone="gray"
         />
         <StatTile label="Last month"  value={lm.toLocaleString()} />
