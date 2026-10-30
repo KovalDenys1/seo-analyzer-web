@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Tag, Heading, Link as LinkIcon, Image as ImageIcon, Key, Speed } from "@/components/ui/Icons";
 import type { ComponentType } from "react";
@@ -54,6 +55,20 @@ export default function Features() {
             check it worked.
           </p>
         </div>
+
+        <figure className="report-shot">
+          <Image
+            src="/report-screenshot.png"
+            width={1520}
+            height={1448}
+            sizes="(max-width: 760px) 100vw, 640px"
+            alt="Screenshot of an SEO Audit Lab report on a JavaScript-rendered page: score 40, grade F, with the empty-page fix first and its evidence"
+          />
+          <figcaption>
+            A real report on the <Link href="/demo/spa-shell">demo Vite shell</Link>: the fix that
+            matters comes first, with the byte and word counts behind it.
+          </figcaption>
+        </figure>
 
         <div className="grid-3">
           {cards.map((card) => (

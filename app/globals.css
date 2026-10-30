@@ -86,6 +86,9 @@ h1, h2, h3 { font-optical-sizing: auto; text-wrap: balance; }
 .eyebrow { font-size: 12px; color: var(--teal); text-transform: uppercase; letter-spacing: 1.4px; }
 .section-title { margin: 8px 0 0; font-size: 38px; letter-spacing: -1px; color: var(--ink-900); line-height: 1.15; }
 .section-sub { margin-top: 12px; font-size: 16px; color: var(--ink-500); line-height: 1.55; }
+.report-shot { margin: 0 auto 48px; max-width: 640px; }
+.report-shot img { display: block; width: 100%; height: auto; border-radius: 14px; box-shadow: var(--shadow-lg); }
+.report-shot figcaption { margin-top: 14px; font-size: 13.5px; color: var(--ink-500); text-align: center; text-wrap: pretty; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; align-items: stretch; }
 .grid-code { display: grid; grid-template-columns: 1fr 1.2fr; gap: 56px; align-items: center; }
