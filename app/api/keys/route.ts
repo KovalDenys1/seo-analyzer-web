@@ -57,7 +57,7 @@ export async function POST() {
     .from("api_keys")
     .delete()
     .eq("user_id", userId)
-    .neq("id", data.id);
+    .lt("created_at", data.created_at);
   if (cleanupError) console.error(`old key cleanup failed: ${cleanupError.message}`);
 
   // Return full key only once
