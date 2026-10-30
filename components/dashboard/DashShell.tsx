@@ -18,35 +18,19 @@ export default function DashShell({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "232px 1fr", height: "100vh", overflow: "hidden" }}>
-      <aside
-        style={{
-          background: "var(--ink-800)",
-          color: "#e5e7eb",
-          display: "flex",
-          flexDirection: "column",
-          padding: "20px 14px",
-          overflow: "hidden",
-        }}
-      >
+    <div className="dash-shell">
+      <aside className="dash-aside">
         {/* logo */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: "4px 8px 16px",
-            borderBottom: "1px solid #1f2937",
-          }}
-        >
+        <Link href="/" className="dash-brand" aria-label="SEO Audit Lab home">
           <Logo size={22} color="#5eead4" />
           <span style={{ fontWeight: 700, color: "#fff", letterSpacing: -0.2 }}>
-            seo<span style={{ color: "#5eead4" }}>.</span>analyzer
+            SEO Audit <span style={{ color: "#5eead4" }}>Lab</span>
           </span>
-        </div>
+        </Link>
 
         {/* nav */}
         <div
+          className="dash-hide-sm"
           style={{
             marginTop: 16,
             fontSize: 11,
@@ -58,7 +42,7 @@ export default function DashShell({ children }: { children: React.ReactNode }) {
         >
           Workspace
         </div>
-        <div style={{ marginTop: 8, display: "grid", gap: 2 }}>
+        <nav className="dash-nav" aria-label="Dashboard">
           {navItems.map((item) => {
             const isActive =
               item.href === "/dashboard"
@@ -87,55 +71,12 @@ export default function DashShell({ children }: { children: React.ReactNode }) {
               </Link>
             );
           })}
-        </div>
+        </nav>
 
-        {/* status */}
-        <div
-          style={{
-            marginTop: 28,
-            fontSize: 11,
-            color: "#6b7280",
-            textTransform: "uppercase",
-            letterSpacing: 1.2,
-            padding: "0 8px",
-          }}
-        >
-          Status
-        </div>
-        <div
-          style={{
-            margin: "8px 0",
-            padding: "10px 12px",
-            background: "rgba(255,255,255,.03)",
-            borderRadius: 8,
-            border: "1px solid #1f2937",
-          }}
-        >
-          <div
-            style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#e5e7eb" }}
-          >
-            <span
-              style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981" }}
-            />
-            All systems operational
-          </div>
-          <div className="mono" style={{ marginTop: 4, fontSize: 11, color: "#6b7280" }}>
-            api · 142ms · p95
-          </div>
-        </div>
-
-        <div style={{ flex: 1 }} />
+        <div className="dash-hide-sm" style={{ flex: 1 }} />
 
         {/* user */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: "10px 8px",
-            borderTop: "1px solid #1f2937",
-          }}
-        >
+        <div className="dash-user">
           <UserButton
             appearance={{
               elements: {
@@ -143,7 +84,7 @@ export default function DashShell({ children }: { children: React.ReactNode }) {
               },
             }}
           />
-          <div style={{ minWidth: 0, flex: 1 }}>
+          <div className="dash-hide-sm" style={{ minWidth: 0, flex: 1 }}>
             <div
               style={{
                 fontSize: 13,
@@ -171,7 +112,7 @@ export default function DashShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main style={{ background: "#fff", overflowY: "auto" }}>{children}</main>
+      <main className="dash-main">{children}</main>
     </div>
   );
 }

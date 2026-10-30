@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import PageHead from "@/components/dashboard/PageHead";
 import Pill from "@/components/ui/Pill";
+import Link from "next/link";
 import { Copy, Refresh, Alert, Plus, X } from "@/components/ui/Icons";
+import { SITE_URL } from "@/lib/site";
 
 interface ApiKey {
   id: string;
@@ -20,6 +22,12 @@ const btnOutline: React.CSSProperties = {
   fontFamily: "inherit", fontSize: 13, fontWeight: 500, cursor: "pointer",
 };
 
+async function fetchKeys(): Promise<ApiKey[]> {
+  const res = await fetch("/api/keys");
+  if (!res.ok) throw new Error();
+  return res.json();
+}
+
 export default function ApiKeyPage() {
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [revealedKey, setRevealedKey] = useState<string | null>(null); // full key shown once after generation
@@ -27,50 +35,62 @@ export default function ApiKeyPage() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/keys");
-    const data = await res.json();
-    setKeys(Array.isArray(data) ? data : []);
-    setLoading(false);
+    try {
+      setKeys(await fetchKeys());
+      setError(null);
+    } catch {
+      setError("Could not load your key. Reload the page to try again.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     let active = true;
-    fetch("/api/keys")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!active) return;
-        setKeys(Array.isArray(data) ? data : []);
-        setLoading(false);
-      });
+    fetchKeys()
+      .then((data) => active && setKeys(data))
+      .catch(() => active && setError("Could not load your key. Reload the page to try again."))
+      .finally(() => active && setLoading(false));
     return () => {
       active = false;
     };
   }, []);
 
+  // The server creates the new key first and then removes the old ones, so a failure never leaves the user keyless.
   const generate = async () => {
     setBusy(true);
-    setRevealedKey(null);
-    // Delete existing keys first
-    for (const k of keys) {
-      await fetch(`/api/keys/${k.id}`, { method: "DELETE" });
+    setError(null);
+    try {
+      const res = await fetch("/api/keys", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.key) throw new Error();
+      setRevealedKey(data.key);
+      await load();
+    } catch {
+      setError("The key could not be created. Your existing key, if any, still works. Try again in a minute.");
+    } finally {
+      setBusy(false);
+      setConfirmDelete(false);
     }
-    const res = await fetch("/api/keys", { method: "POST" });
-    const data = await res.json();
-    setRevealedKey(data.key ?? null);
-    await load();
-    setBusy(false);
-    setConfirmDelete(false);
   };
 
   const deleteKey = async (id: string) => {
     setBusy(true);
-    await fetch(`/api/keys/${id}`, { method: "DELETE" });
-    setRevealedKey(null);
-    await load();
-    setBusy(false);
-    setConfirmDelete(false);
+    setError(null);
+    try {
+      const res = await fetch(`/api/keys/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      setRevealedKey(null);
+      await load();
+    } catch {
+      setError("The key could not be deleted. Try again in a minute.");
+    } finally {
+      setBusy(false);
+      setConfirmDelete(false);
+    }
   };
 
   const handleCopy = (text: string) => {
@@ -87,7 +107,13 @@ export default function ApiKeyPage() {
   return (
     <>
       <PageHead title="API Key" sub="Your secret key. Treat it like a password." />
-      <div style={{ padding: 36, display: "grid", gap: 20, maxWidth: 880 }}>
+      <div style={{ padding: "var(--dash-pad)", display: "grid", gap: 20, maxWidth: 880 }}>
+
+        {error && (
+          <div role="alert" style={{ background: "#fff5f5", border: "1px solid #fca5a5", borderRadius: 12, padding: 16, fontSize: 13.5, color: "#991b1b" }}>
+            {error}
+          </div>
+        )}
 
         {revealedKey && (
           <div style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 12, padding: 16, fontSize: 13.5, color: "#166534" }}>
@@ -122,17 +148,18 @@ export default function ApiKeyPage() {
                 display: "flex", alignItems: "center",
                 background: "var(--ink-50)", border: "1px solid var(--ink-200)",
                 borderRadius: 10, fontSize: 13.5, color: "var(--ink-800)",
-                letterSpacing: 0.4, overflow: "hidden",
+                letterSpacing: 0.4, overflowX: "auto", whiteSpace: "nowrap", minWidth: 0,
               }}>
                 {revealedKey ?? `${activeKey.key_prefix}••••••••••••••••••••••••`}
               </div>
-              <button
-                onClick={() => handleCopy(revealedKey ?? activeKey.key_prefix)}
-                style={{ ...btnOutline, height: 48, padding: "0 14px" }}
-                title={revealedKey ? "Copy full key" : "Copy key prefix"}
-              >
-                <Copy size={14} /> {copied ? "Copied!" : "Copy"}
-              </button>
+              {revealedKey && (
+                <button
+                  onClick={() => handleCopy(revealedKey)}
+                  style={{ ...btnOutline, height: 48, padding: "0 14px" }}
+                >
+                  <Copy size={14} /> {copied ? "Copied!" : "Copy"}
+                </button>
+              )}
             </div>
 
             {!revealedKey && (
@@ -152,6 +179,20 @@ export default function ApiKeyPage() {
             }}>
               <Plus size={14} /> {busy ? "Generating…" : "Generate key"}
             </button>
+          </div>
+        )}
+
+        {activeKey && (
+          <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, padding: 24 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Use it</div>
+            <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--ink-500)", lineHeight: 1.55 }}>
+              Send the key as a Bearer token. Each call audits one page and counts toward 100 a day on the free plan.{" "}
+              <Link href="/docs#api-key" style={{ color: "var(--teal)" }}>Full reference</Link>
+            </p>
+            <pre className="mono" style={{ margin: 0, padding: 16, background: "#0b1220", color: "#e5e7eb", borderRadius: 10, fontSize: 12.5, lineHeight: 1.6, overflowX: "auto" }}>
+{`curl "${SITE_URL}/api/analyze?url=example.com" \\
+  -H "Authorization: Bearer ${revealedKey ?? "YOUR_KEY"}"`}
+            </pre>
           </div>
         )}
 
@@ -187,7 +228,7 @@ export default function ApiKeyPage() {
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: "#78350f" }}>Regenerate API key</div>
               <p style={{ margin: "4px 0 0", fontSize: 13, color: "#92400e", lineHeight: 1.55 }}>
-                Deletes the current key and creates a new one. Any app using the old key will break immediately.
+                Creates a new key and deletes the current one. Any app using the old key stops working immediately.
               </p>
               <button
                 onClick={generate}

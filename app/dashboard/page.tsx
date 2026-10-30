@@ -15,7 +15,7 @@ export default async function OverviewPage() {
   if (!user) return null;
 
   const plan = user.plan;
-  const limit = PLAN_LIMITS[plan];
+  const limit = PLAN_LIMITS[plan] ?? PLAN_LIMITS.free;
 
   // Usage today
   const today = new Date().toISOString().slice(0, 10);
@@ -62,10 +62,10 @@ export default async function OverviewPage() {
     <>
       <PageHead
         title="Overview"
-        sub={`Welcome back, ${user.name ?? user.email.split("@")[0]}`}
+        sub={`Welcome, ${user.name ?? user.email?.split("@")[0] ?? "there"}`}
       />
 
-      <div style={{ padding: "24px 36px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+      <div className="dash-tiles" style={{ padding: "24px var(--dash-pad)" }}>
         <div style={{ padding: 18, background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12 }}>
           <div style={{ fontSize: 12, color: "var(--ink-500)", textTransform: "uppercase", letterSpacing: 0.8 }}>Plan</div>
           <div style={{ marginTop: 10 }}>
@@ -87,7 +87,7 @@ export default async function OverviewPage() {
       </div>
 
       {/* quota bar */}
-      <div style={{ padding: "0 36px 24px" }}>
+      <div style={{ padding: "0 var(--dash-pad) 24px" }}>
         <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, padding: 20 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
             <div>
@@ -108,7 +108,7 @@ export default async function OverviewPage() {
       </div>
 
       {/* api key preview */}
-      <div style={{ padding: "0 36px 24px" }}>
+      <div style={{ padding: "0 var(--dash-pad) 24px" }}>
         <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, padding: 20 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -135,12 +135,16 @@ export default async function OverviewPage() {
       </div>
 
       {/* recent requests */}
-      <div style={{ padding: "0 36px 36px" }}>
+      <div style={{ padding: "0 var(--dash-pad) 36px" }}>
         <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Recent requests</div>
         <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, overflow: "hidden" }}>
           {recentRows.length === 0 ? (
             <div style={{ padding: 32, textAlign: "center", fontSize: 13.5, color: "var(--ink-400)" }}>
-              No requests yet. Use your API key to start analyzing pages.
+              No requests yet.{" "}
+              <Link href="/dashboard/api-key" style={{ color: "var(--teal)" }}>
+                Create a key
+              </Link>{" "}
+              and make your first call.
             </div>
           ) : (
             <Table

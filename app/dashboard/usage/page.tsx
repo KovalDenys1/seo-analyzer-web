@@ -17,7 +17,6 @@ export default async function UsagePage() {
   // First day of current and previous month
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   const firstOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
-  const firstOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString().slice(0, 10);
 
   // Days elapsed this month (at least 1)
   const daysElapsed = Math.max(now.getDate(), 1);
@@ -38,32 +37,36 @@ export default async function UsagePage() {
     supabase.from("usage_logs").select("id", { count: "exact", head: true })
       .eq("user_id", user.id).gte("created_at", firstOfMonth),
     supabase.from("usage_logs").select("id", { count: "exact", head: true })
-      .eq("user_id", user.id).gte("created_at", firstOfLastMonth).lt("created_at", firstOfNextMonth),
+      .eq("user_id", user.id).gte("created_at", firstOfLastMonth).lt("created_at", firstOfMonth),
     supabase.from("usage_logs").select("id", { count: "exact", head: true })
       .eq("user_id", user.id).gte("created_at", todayStr),
-    supabase.from("usage_logs").select("created_at")
+    supabase.from("usage_logs").select("created_at, endpoint")
       .eq("user_id", user.id).gte("created_at", thirtyDaysAgoStr)
       .order("created_at", { ascending: true }),
     supabase.from("usage_logs").select("endpoint, duration_ms")
       .eq("user_id", user.id).gte("created_at", firstOfMonth),
   ]);
 
-  // Build 30-day array
-  const dayCounts: Record<string, number> = {};
+  // Build 30-day array, split by endpoint
+  type DayCount = { analyze: number; quick: number; meta: number };
+  const dayCounts: Record<string, DayCount> = {};
   for (const row of dailyRaw ?? []) {
     const d = row.created_at.slice(0, 10);
-    dayCounts[d] = (dayCounts[d] ?? 0) + 1;
+    const c = (dayCounts[d] ??= { analyze: 0, quick: 0, meta: 0 });
+    if (row.endpoint === "/quick-score") c.quick++;
+    else if (row.endpoint === "/metadata") c.meta++;
+    else c.analyze++;
   }
   const days: string[] = [];
-  const data: number[] = [];
+  const data: DayCount[] = [];
   for (let i = 0; i < 30; i++) {
     const d = new Date(thirtyDaysAgo);
     d.setDate(d.getDate() + i);
     const str = d.toISOString().slice(0, 10);
     days.push(str);
-    data.push(dayCounts[str] ?? 0);
+    data.push(dayCounts[str] ?? { analyze: 0, quick: 0, meta: 0 });
   }
-  const maxVal = Math.max(...data, 1);
+  const maxVal = Math.max(...data.map((c) => c.analyze + c.quick + c.meta), 1);
 
   // Endpoint breakdown
   const epMap: Record<string, { count: number; totalMs: number }> = {};
@@ -87,7 +90,8 @@ export default async function UsagePage() {
   const tm = thisMonth ?? 0;
   const lm = lastMonth ?? 0;
   const avgDay = Math.round(tm / daysElapsed);
-  const limit = PLAN_LIMITS[user.plan];
+  const limit = PLAN_LIMITS[user.plan] ?? PLAN_LIMITS.free;
+  const change = lm > 0 ? Math.round(((tm - lm) / lm) * 100) : null;
   const quotaPct = limit > 0 ? ((usedToday ?? 0) / limit * 100).toFixed(1) : "0.0";
 
   // Date labels for x-axis (show 5 evenly spaced)
@@ -104,17 +108,22 @@ export default async function UsagePage() {
         sub="Track requests, throughput, and where your quota is going."
       />
 
-      <div style={{ padding: "24px 36px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
-        <StatTile label="This month"  value={tm.toLocaleString()} delta={lm > 0 ? `${lm > 0 ? "+" : ""}${Math.round(((tm - lm) / lm) * 100)}%` : undefined} />
+      <div className="dash-tiles" style={{ padding: "24px var(--dash-pad)" }}>
+        <StatTile
+          label="This month"
+          value={tm.toLocaleString()}
+          delta={change === null ? undefined : `${change > 0 ? "+" : ""}${change}% vs last month`}
+          deltaTone="gray"
+        />
         <StatTile label="Last month"  value={lm.toLocaleString()} />
         <StatTile label="Avg / day"   value={avgDay.toLocaleString()} />
         <StatTile label="Quota used"  value={`${quotaPct}%`} deltaTone="gray" delta="today" />
       </div>
 
       {/* bar chart */}
-      <div style={{ padding: "0 36px 24px" }}>
+      <div style={{ padding: "0 var(--dash-pad) 24px" }}>
         <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, padding: 24 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 18 }}>
             <div>
               <div style={{ fontSize: 14, fontWeight: 600 }}>Requests per day</div>
               <div style={{ fontSize: 12.5, color: "var(--ink-500)", marginTop: 2 }}>
@@ -136,18 +145,18 @@ export default async function UsagePage() {
           </div>
 
           <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 200, borderBottom: "1px solid var(--ink-100)" }}>
-            {data.map((v, i) => {
-              // Split by endpoint ratio if we have endpoint data, otherwise show solid
-              const analyzeShare = endpoints.find(e => e.ep === "/analyze")?.pct ?? 55;
-              const qsShare = endpoints.find(e => e.ep === "/quick-score")?.pct ?? 30;
-              const a = Math.round(v * analyzeShare / 100);
-              const b = Math.round(v * qsShare / 100);
-              const c = v - a - b;
+            {data.map(({ analyze: a, quick: b, meta: c }, i) => {
+              const v = a + b + c;
               return (
-                <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", height: "100%" }}>
-                  {v > 0 && <div style={{ height: `${(c / maxVal) * 100}%`, background: "#cffafe" }} />}
-                  {v > 0 && <div style={{ height: `${(b / maxVal) * 100}%`, background: "#5eead4" }} />}
-                  <div style={{ height: `${(a / maxVal) * 100}%`, background: v > 0 ? "var(--teal)" : "var(--ink-100)", borderRadius: "3px 3px 0 0" }} />
+                <div
+                  key={i}
+                  title={`${formatLabel(days[i])}: ${v} request${v === 1 ? "" : "s"}`}
+                  style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", height: "100%" }}
+                >
+                  {v === 0 && <div style={{ height: 2, background: "var(--ink-100)" }} />}
+                  {c > 0 && <div style={{ height: `${(c / maxVal) * 100}%`, background: "#cffafe" }} />}
+                  {b > 0 && <div style={{ height: `${(b / maxVal) * 100}%`, background: "#5eead4" }} />}
+                  {a > 0 && <div style={{ height: `${(a / maxVal) * 100}%`, background: "var(--teal)" }} />}
                 </div>
               );
             })}
@@ -160,7 +169,7 @@ export default async function UsagePage() {
       </div>
 
       {/* by endpoint table */}
-      <div style={{ padding: "0 36px 36px" }}>
+      <div style={{ padding: "0 var(--dash-pad) 36px" }}>
         <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>By endpoint</div>
         <div style={{ background: "#fff", border: "1px solid var(--ink-200)", borderRadius: 12, overflow: "hidden" }}>
           {endpoints.length === 0 ? (

@@ -13,7 +13,7 @@ export default function PageHead({
         display: "flex",
         alignItems: "flex-end",
         justifyContent: "space-between",
-        padding: "28px 36px 20px",
+        padding: "28px var(--dash-pad) 20px",
         borderBottom: "1px solid var(--ink-100)",
       }}
     >

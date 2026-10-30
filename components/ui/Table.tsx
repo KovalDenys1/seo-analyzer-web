@@ -13,7 +13,8 @@ export default function Table({
 }) {
   const gridCols = colWidths.join(" ");
   return (
-    <div>
+    <div style={{ overflowX: "auto" }}>
+      <div style={{ minWidth: 560 }}>
       <div
         style={{
           display: "grid",
@@ -57,6 +58,7 @@ export default function Table({
             ))}
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

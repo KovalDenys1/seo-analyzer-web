@@ -21,16 +21,24 @@ export async function GET() {
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
-  if (error) return Response.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error(`keys list failed: ${error.message}`);
+    return Response.json({ error: "Could not load keys." }, { status: 500 });
+  }
   return Response.json(data);
 }
 
-// POST /api/keys — create a new key
+// POST /api/keys — create a new key and retire the user's older ones
 export async function POST() {
   const { userId } = await auth();
   if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-  await ensureUser();
+  try {
+    await ensureUser();
+  } catch (err) {
+    console.error(`ensureUser failed: ${(err as Error).message}`);
+    return Response.json({ error: "Could not create the key." }, { status: 500 });
+  }
 
   const { key, prefix, hash } = generateKey();
 
@@ -40,7 +48,17 @@ export async function POST() {
     .select("id, key_prefix, name, created_at")
     .single();
 
-  if (error) return Response.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error(`key insert failed: ${error.message}`);
+    return Response.json({ error: "Could not create the key." }, { status: 500 });
+  }
+
+  const { error: cleanupError } = await supabase
+    .from("api_keys")
+    .delete()
+    .eq("user_id", userId)
+    .neq("id", data.id);
+  if (cleanupError) console.error(`old key cleanup failed: ${cleanupError.message}`);
 
   // Return full key only once
   return Response.json({ ...data, key });

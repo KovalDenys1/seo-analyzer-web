@@ -14,6 +14,9 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     .eq("id", id)
     .eq("user_id", userId); // ensure ownership
 
-  if (error) return Response.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error(`key delete failed: ${error.message}`);
+    return Response.json({ error: "Could not delete the key." }, { status: 500 });
+  }
   return Response.json({ ok: true });
 }

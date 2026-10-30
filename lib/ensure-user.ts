@@ -11,21 +11,15 @@ export async function ensureUser() {
 
   const name = [clerk.firstName, clerk.lastName].filter(Boolean).join(" ") || null;
 
-  const { data, error } = await supabase
+  const { error: upsertError } = await supabase
     .from("users")
-    .upsert({ id: clerk.id, email, name, plan: "free" }, { onConflict: "id", ignoreDuplicates: true })
-    .select()
-    .single();
+    .upsert(
+      { id: clerk.id, email: email ?? null, name, plan: "free" },
+      { onConflict: "id", ignoreDuplicates: true }
+    );
+  if (upsertError) throw new Error(`user upsert failed: ${upsertError.message}`);
 
-  if (error) {
-    // User already exists — fetch them
-    const { data: existing } = await supabase
-      .from("users")
-      .select()
-      .eq("id", clerk.id)
-      .single();
-    return existing;
-  }
-
-  return data;
+  const { data, error } = await supabase.from("users").select().eq("id", clerk.id).maybeSingle();
+  if (error || !data) throw new Error(`user lookup failed: ${error?.message ?? "no row"}`);
+  return data as { id: string; email: string | null; name: string | null; plan: string; created_at: string };
 }
