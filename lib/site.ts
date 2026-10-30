@@ -15,7 +15,7 @@ export const APIFY_ISSUES_URL = "https://apify.com/seo-audit-lab/saas-seo-analyz
 export const GITHUB_URL = "https://github.com/KovalDenys1/SEO-Analyzer-API";
 export const GITHUB_ISSUES_URL = "https://github.com/KovalDenys1/SEO-Analyzer-API/issues";
 // Served from the public Vercel Blob store `seo-audit-lab-media`, not from git.
-const PROMO_VIDEO_BASE = "";
+const PROMO_VIDEO_BASE = "https://dq3bggxc4xu7hosl.public.blob.vercel-storage.com";
 
 export const PROMO_VIDEO = {
   src: `${PROMO_VIDEO_BASE}/promo/v1/en.mp4`,
