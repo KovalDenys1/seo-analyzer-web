@@ -18,10 +18,10 @@ export const GITHUB_ISSUES_URL = "https://github.com/KovalDenys1/SEO-Analyzer-AP
 const PROMO_VIDEO_BASE = "https://dq3bggxc4xu7hosl.public.blob.vercel-storage.com";
 
 export const PROMO_VIDEO = {
-  src: `${PROMO_VIDEO_BASE}/promo/v4/en.mp4`,
-  poster: `${PROMO_VIDEO_BASE}/promo/v4/en.jpg`,
+  src: `${PROMO_VIDEO_BASE}/promo/v1/en.mp4`,
+  poster: `${PROMO_VIDEO_BASE}/promo/v1/en.jpg`,
   uploadDate: "2026-10-30",
-  duration: "PT28S",
+  duration: "PT45S",
 };
 
 export const METHODOLOGY_URL =
