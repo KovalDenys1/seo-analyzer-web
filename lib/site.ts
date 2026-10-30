@@ -5,7 +5,9 @@ export const SITE_URL = (
 ).replace(/\/$/, "");
 
 export const SITE_DESCRIPTION =
-  "Free SEO audit for SaaS and product sites: a 0–100 score, every issue with the evidence behind it, and fixes ranked by impact. Run one page free here, or whole sites on Apify at $0.02 a page.";
+  "Free SEO audit for SaaS sites: a 0–100 score, every issue with its fix, and a flag when crawlers get an empty JavaScript page. Whole sites on Apify at $0.02 a page.";
+
+export const CONTACT_EMAIL = "denyskoval.outreach@gmail.com";
 
 export const APIFY_ACTOR_URL = "https://apify.com/seo-audit-lab/saas-seo-analyzer";
 export const APIFY_API_URL = "https://apify.com/seo-audit-lab/saas-seo-analyzer/api";

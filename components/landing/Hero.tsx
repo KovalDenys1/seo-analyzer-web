@@ -1,5 +1,6 @@
 import { Check } from "@/components/ui/Icons";
 import AuditWidget from "@/components/landing/AuditWidget";
+import { GITHUB_URL, METHODOLOGY_URL } from "@/lib/site";
 
 export default function Hero() {
   return (
@@ -18,23 +19,23 @@ export default function Hero() {
         </h1>
 
         <p className="hero-sub">
-          Paste a URL. Get a 0–100 score, every issue with the evidence that triggered it, and
-          fixes ranked by impact and effort. A second score checks whether the page gives a
-          visitor a reason to sign up.
+          Paste a URL. Get a 0–100 score, every issue on the page with its fix, ranked by impact
+          and effort. If your site is a React or Vite app that sends crawlers an empty page, it
+          says so first, where other audits call it fine.
         </p>
 
         <AuditWidget />
 
         <div className="hero-trust">
-          {[
-            "Results in seconds",
-            "Scoring method published",
-            "Analyzer is open source (MIT)",
-          ].map((text) => (
-            <span key={text} style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-              <Check size={14} color="var(--teal)" /> {text}
-            </span>
-          ))}
+          <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
+            <Check size={14} color="var(--teal)" /> Results in seconds
+          </span>
+          <a href={METHODOLOGY_URL} target="_blank" rel="noopener" className="hero-trust-link">
+            <Check size={14} color="var(--teal)" /> Scoring method published
+          </a>
+          <a href={GITHUB_URL} target="_blank" rel="noopener" className="hero-trust-link">
+            <Check size={14} color="var(--teal)" /> Analyzer is open source (MIT)
+          </a>
         </div>
       </div>
     </section>

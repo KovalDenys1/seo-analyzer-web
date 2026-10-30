@@ -46,7 +46,7 @@ const jsonLd = {
 
 export default function Home() {
   return (
-    <div style={{ background: "#fff", overflowX: "hidden" }}>
+    <div style={{ background: "#fff", overflowX: "clip" }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}

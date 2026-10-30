@@ -26,7 +26,7 @@ export default function Navbar() {
         ))}
       </nav>
 
-      <a href={APIFY_ACTOR_URL} target="_blank" rel="noopener" className="btn-teal btn-sm">
+      <a href={APIFY_ACTOR_URL} target="_blank" rel="noopener" className="btn-teal btn-sm navbar-cta">
         Run on Apify <ArrowR size={14} />
       </a>
     </header>
