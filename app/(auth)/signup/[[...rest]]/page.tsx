@@ -1,5 +1,8 @@
 import { SignUp } from "@clerk/nextjs";
 import AuthLayout from "@/components/auth/AuthLayout";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Create an account" };
 
 const clerkAppearance = {
   variables: {
