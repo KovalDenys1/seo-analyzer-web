@@ -14,5 +14,15 @@ export const APIFY_API_URL = "https://apify.com/seo-audit-lab/saas-seo-analyzer/
 export const APIFY_ISSUES_URL = "https://apify.com/seo-audit-lab/saas-seo-analyzer/issues";
 export const GITHUB_URL = "https://github.com/KovalDenys1/SEO-Analyzer-API";
 export const GITHUB_ISSUES_URL = "https://github.com/KovalDenys1/SEO-Analyzer-API/issues";
+// Served from the public Vercel Blob store `seo-audit-lab-media`, not from git.
+const PROMO_VIDEO_BASE = "";
+
+export const PROMO_VIDEO = {
+  src: `${PROMO_VIDEO_BASE}/promo/v1/en.mp4`,
+  poster: `${PROMO_VIDEO_BASE}/promo/v1/en.jpg`,
+  uploadDate: "2026-10-30",
+  duration: "PT45S",
+};
+
 export const METHODOLOGY_URL =
   "https://github.com/KovalDenys1/SEO-Analyzer-API/blob/main/docs/METHODOLOGY.md";
