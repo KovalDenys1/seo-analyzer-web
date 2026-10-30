@@ -1,6 +1,6 @@
 # V1 gaps – SEO Audit Lab
 
-Checked 2026-10-16. The question is what stands between today and a v1 that a stranger can find, try and pay for. Ranked by impact on the first paying customer.
+Checked 2026-10-16, new-user audit added 2026-10-30. The question is what stands between today and a v1 that a stranger can find, try and pay for. Ranked by impact on the first paying customer.
 
 The only working payment path is the Apify actor ([seo-audit-lab/saas-seo-analyzer](https://apify.com/seo-audit-lab/saas-seo-analyzer), pay per event, $0.02 per page). Apify handles accounts, keys and billing, so v1 does not need Stripe on this site. The site's job is to be found, give a real free audit and send paying use to Apify.
 
@@ -36,9 +36,41 @@ The only working payment path is the Apify actor ([seo-audit-lab/saas-seo-analyz
 | 18 | Leads agent on the Pi still targets Ukrainian local businesses | The automated pipeline produces leads the product does not fit | **Open.** Retarget it to SaaS and product sites in English, using today's manual list as the pilot |
 | 19 | Housekeeping. Backend Dependabot PRs #5, #6 and #7. Four unused-import lint warnings on the site | None for the first customer | **Fixed.** The Dependabot PRs were merged 19.10, the lint warnings removed 29.10 in `25db876` |
 
+## New-user audit, 2026-10-30
+
+Three read-only audits ran on the live site: a browser walk at 390 and 1440 px as a stranger, a code-path review, and a technical SEO, performance and accessibility pass. The question was whether a stranger from an outreach email, Google or the Apify Store understands the product, gets a convincing result and knows what to do next. Strangers understood the product, and healthy sites scored believably. But the product's own pitch case failed, and the account path was not fit for a stranger.
+
+| # | Gap | Impact | Status |
+|---|-----|--------|--------|
+| 20 | A Vite shell scored 77.5/C, the same as example.com. The shell issue was titled like thin content and ranked 5th, behind fixes the page already passes in a browser | The one finding that sets the product apart read as a mistake | **Fixed** in the analyzer (methodology 2026.2, SEO-Analyzer-API `a3b6e8e`): the score is capped at 40, the shell fix is ranked first, and its symptoms are folded under it. The card shows a callout with evidence (`687fa08`). A demo shell is one click away |
+| 21 | Bot walls were scored as the site. indeed.com's Cloudflare challenge got 66/D, and paid actor runs were charged for challenge pages | Wrong results, and charges the listing said would not happen | **Fixed.** The response is `blocked_by_bot_protection`: an error on the site, a free error item on Apify (build 0.1.4) |
+| 22 | A 404 page scored 75–80 and recommended removing noindex | A broken page looked fine | **Fixed.** Error pages are capped at 20, the status fix comes first, noindex is not reported on them, and no SaaS score is given |
+| 23 | The free result showed 6 issue titles and 3 fixes, but promised every issue with evidence. The score was rounded and the grade was not (80 next to C) | Trust | **Fixed** `687fa08`. Every issue is shown with its fix, the score has one decimal, and errors are written in plain words |
+| 24 | Sign-up, sign-in and the dashboard were unusable at 390 px, with an 85 px form and a 158 px content area | A stranger on a phone could not sign up | **Fixed** `59a4c0b` |
+| 25 | The auth pages showed a made-up testimonial from a named engineer at a real company, a fake API host and an SDK that does not exist. The dashboard always said "All systems operational", and the product used three names | Trust, and an endorsement nobody gave | **Fixed** `59a4c0b`, `04bcc34` (Clerk wording) |
+| 26 | The API key had no docs. The route read only `Authorization: Bearer`, while the GitHub docs teach `X-API-Key` | A new key could not be used | **Fixed.** The docs have an API key section, the key page has a usage snippet, both headers work, and bare domains are accepted (`a4f997b`, `52e344d`) |
+| 27 | `ensureUser` turned database errors into a blank dashboard, and a unique email blocked any re-signup | A dead dashboard with no message | **Fixed** `59a4c0b`. The constraint was dropped on the VM, `ensureUser` throws, and an error boundary catches it |
+| 28 | Parallel calls passed the daily quota. A database error looked like an invalid key, and our own failures cost the user quota | Abuse of the shared backend, and confusing 401s | **Fixed** `a4f997b`. A row is reserved before the call (5 parallel calls at 99/100 let 1 through), errors give 503, and our faults are refunded |
+| 29 | The usage page counted this month as last month and invented the endpoint split | Wrong numbers | **Fixed** `59a4c0b` |
+| 30 | The VM self-deploy had failed since 27.10 16:51. Root-owned files from the wrapper-db setup blocked `git fetch`, so the VM ran `62e56bc` | Pushes did not reach production, silently | **Fixed 30.10.** Ownership was repaired, and the unit now heals it before each run (SEO-Analyzer-API `aefe628`), tested with a planted root-owned file |
+| 31 | Every public page loaded about 730 KB of Clerk dev JavaScript | Speed, and a console warning | **Fixed** `04bcc34`. Clerk loads only on the auth pages and the dashboard |
+| 32 | No 404 page, no private contact, wrong processors on the privacy page, the header gone on phones, the sticky header broken | Polish and trust | **Fixed** `52e344d`, `b924b6e` |
+| 33 | Nothing on the site was written for people searching about the JS-shell problem | Nothing to be found by | **Fixed** `8bf5685`. Three guides, in the sitemap |
+| 34 | The Apify price label reads "1,000 page auditeds" | Polish | **Open.** It needs the pay-per-event title renamed in the Apify console, and a pricing change there may come with a notice period, so it is left until a price change is due anyway |
+| 35 | Clerk is a development instance: a "Development mode" badge and a Cloudflare check on sign-up | Trust on the account path | **Open, by decision.** Gate 30.11 |
+| 36 | Night review: AWS WAF's 202 challenge and PerimeterX pages were missed, while a site's own 503 behind Cloudflare or DataDome was refused as a challenge. A noindex or site-wide bonus could rank above the gate fix | Wrong results in both directions | **Fixed** SEO-Analyzer-API `092755e`, actor build 0.1.5 |
+| 37 | The deploy heal script failed on a tracked file missing from the tree, which would stall deploys again | Silent deploy stall | **Fixed** SEO-Analyzer-API `66000d2`, installed on the VM |
+| 38 | Compressed IPv6 addresses escaped the free-audit limit, two key rotations at once left no working key, a killed function left a usage row counting against the limit, and the usage change compared a part month with a whole one | Abuse and wrong numbers | **Fixed** `06554d5`, `efe0506`, `22171f2`, `3c5219b` |
+| 39 | Every subpage, the guides included, carried the home page's Open Graph tags and og:url | Shared guides previewed as the home page: the check the product sells | **Fixed** `7fab099` |
+| 40 | Teal text and buttons were 3.74:1, gray text 2.53:1, and the focus ring vanished on teal buttons. A failed audit dropped keyboard focus to the page top | Accessibility 94–96 on every page | **Fixed** `efc8210`, `8814ab6`, `2b56e9e` |
+| 41 | Only HSTS was sent, plus `x-powered-by` | A technical buyer's header scan | **Fixed** `d1f50b5` |
+| 42 | The product's own home page gets "No obvious product visual detected" from its own audit | The self-test does not come back clean | **Open**, next: a real report screenshot on the home page |
+| 43 | Lighthouse's headless Chrome gets about 235 KiB of extra files and an unstable 3.2 s mobile LCP; a burst of requests gets a Vercel challenge | PageSpeed scores pay for it | **Open.** Vercel Firewall settings need a sign-in (the CLI token has expired) |
+| 44 | The `-ebon.vercel.app` host: `www.` has no certificate, and Clerk production needs an owned domain | Trust | **Open, by decision.** Gate 30.11, together with 35 |
+
 ## Not gaps
 
-- Backend API. 96 tests and the 14 actor tests pass. Live `/v1/analyze` handles bad URLs, private addresses and DNS failures with clean errors. Render keep-warm from the Pi works (`/healthz` 200 in 0.3 s).
+- Backend API. 115 tests and the 17 actor tests pass. Live `/v1/analyze` handles bad URLs, private addresses and DNS failures with clean errors. Render keep-warm from the Pi works (`/healthz` 200 in 0.3 s).
 - Apify payment. Pay-per-event pricing is live, failed pages are not charged, and Apify's free plan gives a stranger $5 a month with no card.
 
 ## Next gate
